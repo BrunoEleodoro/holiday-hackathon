@@ -13,11 +13,17 @@ export interface NPC {
   y: number;
   size: number;
   name: string;
+  character: string;
+  animation: {
+    currentFrame: number;
+    direction: string;
+  };
 }
 
 export interface GameState {
   npcs: NPC[];
-  mapElements: MapElement[];
+  activeCombat: Combat | null;
+  combatLog: string[];
 }
 
 export interface Combat {

@@ -24,119 +24,128 @@ const io = new Server(server, {
 
 // Game state
 const gameState = {
-    mapWidth: 1280,
-    mapHeight: 1280,
+    mapWidth: 1564,
+    mapHeight: 1137,
     gamePaused: false,
-    npcs: [],
+    npcs: [
+        {
+            x: 200,
+            y: 200,
+            size: 32,
+            speed: 2,
+            name: "Deckard",
+            character: "/static/characters/deckard.png",
+            config: createNPCConfig()
+        },
+        {
+            x: 400,
+            y: 400,
+            size: 32,
+            speed: 2,
+            name: "Joi",
+            character: "/static/characters/joi.png",
+            config: createNPCConfig()
+        },
+        {
+            x: 600,
+            y: 600,
+            size: 32,
+            speed: 2,
+            name: "K Jacket",
+            character: "/static/characters/k jacket.png",
+            config: createNPCConfig()
+        },
+        {
+            x: 800,
+            y: 800,
+            size: 32,
+            speed: 2,
+            name: "Pris",
+            character: "/static/characters/pris.png",
+            config: createNPCConfig()
+        },
+        {
+            x: 1000,
+            y: 1000,
+            size: 32,
+            speed: 2,
+            name: "Rachael",
+            character: "/static/characters/luv combat.png",
+            config: createNPCConfig()
+        },
+        {
+            x: 1200,
+            y: 1000,
+            size: 32,
+            speed: 2,
+            name: "Zowie",
+            character: "/static/characters/royshirtless.png",
+            config: createNPCConfig()
+        }
+    ],
     activeCombat: null,
-    combatLog: [],
-    mapElements: [] // Store map obstacles/elements
+    combatLog: []
 };
 
-// Map element types with their sizes
-const elementTypes = {
-    buildings: [
-        { name: 'Building facade 1 - 12x3.png', width: 12, height: 3, rotation: 0 },
-        { name: 'Building facade 2 - Yellow - 12x3.png', width: 12, height: 3, rotation: 0 },
-        { name: 'Building facade 3 - Red - 12x3.png', width: 12, height: 3, rotation: 0 }
-    ],
-    obstacles: [
-        { name: 'Dumpster 1 - 2x2.png', width: 2, height: 2, rotation: 0 },
-        { name: 'Barrier - Concrete 1 - 1x1.png', width: 1, height: 1, rotation: 0 },
-        { name: 'Crate 1 - 1x1.png', width: 1, height: 1, rotation: 0 },
-        { name: 'Trash bags - 2x1.png', width: 2, height: 1, rotation: 0 },
-        { name: 'Vending machine 1 - 1x1.png', width: 1, height: 1, rotation: 0 }
-    ],
-    decorations: [
-        { name: 'Hologram 1 - 1x1.png', width: 1, height: 1, rotation: 0 },
-        { name: 'Screen 1 - Red - 1x1.png', width: 1, height: 1, rotation: 0 },
-        { name: 'Street light 1 - 2x1.png', width: 2, height: 1, rotation: 0 },
-        { name: 'Noodle lunch - 1x1.png', width: 1, height: 1, rotation: 0 }
-    ]
-};
-
-// Initialize map with elements
-function initializeMap() {
-    // create fake npcs 
-    gameState.npcs = [
-        { name: 'NPC 1', x: 100, y: 100, size: 32, character: 'npc1' },
-        { name: 'NPC 2', x: 200, y: 200, size: 32, character: 'npc2' }
-    ];
-}
-
-// Find valid position for new element that doesn't overlap with existing elements
-function findValidPosition(width, height) {
-    let attempts = 0;
-    const maxAttempts = 50;
-
-    while (attempts < maxAttempts) {
-        const x = Math.random() * (gameState.mapWidth - width);
-        const y = Math.random() * (gameState.mapHeight - height);
-
-        if (!checkElementCollision(x, y, width, height)) {
-            return { x, y };
-        }
-        attempts++;
+// Function to get evenly distributed positions
+function getEvenlyDistributedPositions(numNPCs, mapWidth, mapHeight) {
+    if (numNPCs === 1) {
+        return [{ x: 782, y: 568 }];
     }
-    return null;
-}
+    const positions = [];
+    const cols = Math.ceil(Math.sqrt(numNPCs));
+    const rows = Math.ceil(numNPCs / cols);
 
-// Check if position collides with any existing map elements
-function checkElementCollision(x, y, width, height) {
-    return gameState.mapElements.some(element => {
-        return !(x + width < element.x ||
-            x > element.x + element.width ||
-            y + height < element.y ||
-            y > element.y + element.height);
-    });
-}
+    const cellWidth = mapWidth / cols;
+    const cellHeight = mapHeight / rows;
 
-// Modified checkCollisions to include map elements
-function checkCollisions() {
-    // Check NPC collisions with map elements
-    for (let npc of gameState.npcs) {
-        for (let element of gameState.mapElements) {
-            if (!(npc.x + npc.size < element.x ||
-                npc.x > element.x + element.width ||
-                npc.y + npc.size < element.y ||
-                npc.y > element.y + element.height)) {
-                // Move NPC back to previous valid position
-                npc.x = npc.prevX;
-                npc.y = npc.prevY;
-            }
+    let count = 0;
+    for (let i = 0; i < rows && count < numNPCs; i++) {
+        for (let j = 0; j < cols && count < numNPCs; j++) {
+            // Add some randomness within each cell
+            const randomX = (j * cellWidth) + (Math.random() * (cellWidth - 64)) + 32;
+            const randomY = (i * cellHeight) + (Math.random() * (cellHeight - 64)) + 32;
+            positions.push({ x: randomX, y: randomY });
+            count++;
         }
     }
-
-    // Check NPC-to-NPC collisions
-    for (let i = 0; i < gameState.npcs.length; i++) {
-        for (let j = i + 1; j < gameState.npcs.length; j++) {
-            const npc1 = gameState.npcs[i];
-            const npc2 = gameState.npcs[j];
-
-            const dx = npc1.x - npc2.x;
-            const dy = npc1.y - npc2.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < npc1.size) {
-                return {
-                    collision: true,
-                    npc1: npc1.name,
-                    npc2: npc2.name
-                };
-            }
-        }
-    }
-    return { collision: false };
+    return positions;
 }
 
-// Modified updateNPC to store previous position
+// Function to get random positions
+function getRandomPositions(numNPCs, mapWidth, mapHeight) {
+    const positions = [];
+    for (let i = 0; i < numNPCs; i++) {
+        positions.push({
+            x: Math.random() * (mapWidth - 64) + 32,
+            y: Math.random() * (mapHeight - 64) + 32
+        });
+    }
+    return positions;
+}
+
+// NPC configuration template
+function createNPCConfig() {
+    return {
+        frameWidth: 96,  // 288/3 frames per row
+        frameHeight: 96, // 384/4 rows
+        animations: {
+            down: { y: 0, frames: 3 },
+            left: { y: 1, frames: 3 },
+            right: { y: 2, frames: 3 },
+            up: { y: 3, frames: 3 }
+        },
+        currentFrame: 0,
+        frameCount: 0,
+        direction: 'down',
+        moveTimer: 0,
+        moveDuration: 60,
+        isMoving: false
+    };
+}
+
 function updateNPC(npc) {
     if (gameState.gamePaused) return;
-
-    // Store previous position
-    npc.prevX = npc.x;
-    npc.prevY = npc.y;
-
     const npcConfig = npc.config;
     npcConfig.moveTimer++;
 
@@ -179,16 +188,34 @@ function updateNPC(npc) {
     }
 }
 
-// Initialize map when server starts
-initializeMap();
+function checkCollisions() {
+    for (let i = 0; i < gameState.npcs.length; i++) {
+        for (let j = i + 1; j < gameState.npcs.length; j++) {
+            const npc1 = gameState.npcs[i];
+            const npc2 = gameState.npcs[j];
 
-// Modified gameLoop to include map elements in state update
+            const dx = npc1.x - npc2.x;
+            const dy = npc1.y - npc2.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < npc1.size) {
+                return {
+                    collision: true,
+                    npc1: npc1.name,
+                    npc2: npc2.name
+                };
+            }
+        }
+    }
+    return { collision: false };
+}
+
 function gameLoop() {
     if (!gameState.gamePaused) {
         gameState.npcs.forEach(updateNPC);
         const collisionResult = checkCollisions();
-
-        if (collisionResult.collision) {
+        // TODO: Implement combat logic
+        if (collisionResult.collision && false) {
             gameState.gamePaused = true;
             gameState.activeCombat = {
                 npc1: collisionResult.npc1,
@@ -200,21 +227,11 @@ function gameLoop() {
                 npc2: collisionResult.npc2
             });
 
-            const winner = Math.random() < 0.5 ? collisionResult.npc1 : collisionResult.npc2;
-
-            io.emit('fightResult', {
-                winner: winner,
-                reason: `${winner} won by chance!`,
-                npc1: collisionResult.npc1,
-                npc2: collisionResult.npc2
-            });
-
             setTimeout(() => {
                 gameState.gamePaused = false;
                 gameState.activeCombat = null;
                 gameState.combatLog = [];
                 io.emit('gameResumed');
-                resetNPCPositions();
             }, 5000);
         }
 
@@ -231,7 +248,6 @@ function gameLoop() {
                     isMoving: npc.config.isMoving
                 }
             })),
-            mapElements: gameState.mapElements,
             timestamp: Date.now()
         });
     }
@@ -242,13 +258,6 @@ app.use(express.json());
 
 io.on('connection', (socket) => {
     console.log('A user connected');
-
-    // Send initial map state
-    socket.emit('mapInit', {
-        mapElements: gameState.mapElements
-    });
-
-    // emitGameStatus();
 
     if (gameState.activeCombat) {
         socket.emit('collision', {
@@ -265,7 +274,6 @@ io.on('connection', (socket) => {
 setInterval(gameLoop, 1000 / 60);
 
 const PORT = 3003;
-
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
