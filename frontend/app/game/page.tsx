@@ -15,7 +15,7 @@ function Game() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const socket = io('http://localhost:3003');
+        const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3003');
 
         socket.on('connect', () => {
             console.log('Connected to server');
@@ -100,8 +100,8 @@ function Game() {
                             position: 'absolute',
                             left: npc.x,
                             top: npc.y,
-                            width: npc.size,
-                            height: npc.size,
+                            width: npc.size + 10,
+                            height: npc.size + 10,
                             cursor: 'pointer',
                             zIndex: 4
                         }}
@@ -133,11 +133,11 @@ function Game() {
                         <div
                             style={{
                                 position: 'absolute',
-                                top: '-20px',
+                                top: '-10px',
                                 width: '100%',
                                 textAlign: 'center',
                                 color: '#0f0',
-                                fontSize: '12px',
+                                fontSize: '22px',
                                 textShadow: '0 0 5px rgba(0, 255, 0, 0.7)'
                             }}
                         >

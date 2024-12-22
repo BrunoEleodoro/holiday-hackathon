@@ -6,7 +6,7 @@ const cors = require('cors');
 
 // Configure CORS for Express
 app.use(cors({
-    origin: "http://localhost:3000", // NextJS default port
+    origin: "*", 
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -16,7 +16,7 @@ const server = http.createServer(app);
 // Configure CORS for Socket.IO
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "*",
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -33,7 +33,7 @@ const gameState = {
             y: 200,
             size: 32,
             speed: 2,
-            name: "Deckard",
+            name: "deckard.lens",
             character: "/static/characters/deckard.png",
             config: createNPCConfig()
         },
@@ -42,7 +42,7 @@ const gameState = {
             y: 400,
             size: 32,
             speed: 2,
-            name: "Joi",
+            name: "johndoe.lens",
             character: "/static/characters/joi.png",
             config: createNPCConfig()
         },
@@ -51,7 +51,7 @@ const gameState = {
             y: 600,
             size: 32,
             speed: 2,
-            name: "K Jacket",
+            name: "k.jacket.lens",
             character: "/static/characters/k jacket.png",
             config: createNPCConfig()
         },
@@ -60,7 +60,7 @@ const gameState = {
             y: 800,
             size: 32,
             speed: 2,
-            name: "Pris",
+            name: "pris.lens",
             character: "/static/characters/pris.png",
             config: createNPCConfig()
         },
@@ -69,7 +69,7 @@ const gameState = {
             y: 1000,
             size: 32,
             speed: 2,
-            name: "Rachael",
+            name: "rachael.lens",
             character: "/static/characters/luv combat.png",
             config: createNPCConfig()
         },
@@ -78,7 +78,7 @@ const gameState = {
             y: 1000,
             size: 32,
             speed: 2,
-            name: "Zowie",
+            name: "zowie.lens",
             character: "/static/characters/royshirtless.png",
             config: createNPCConfig()
         }
