@@ -11,9 +11,10 @@
   "dependencies": {
     "@tanstack/react-query": "^5.17.15",
     "connectkit": "^1.8.2",
-    "next": "14.0.4",
+    "next": "^15.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "socket.io-client": "^4.8.1",
     "viem": "^2.13.0",
     "wagmi": "^2.10.2"
   },
