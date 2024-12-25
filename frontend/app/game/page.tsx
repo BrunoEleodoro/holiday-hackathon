@@ -41,43 +41,23 @@ function Game() {
 
     if (isLoading) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100vw',
-                height: '100vh',
-                backgroundColor: 'black',
-                color: 'white'
-            }}>
+            <div className="flex justify-center items-center w-screen h-screen bg-black text-white">
                 Loading...
             </div>
         );
     }
 
     return (
-        <div className="relative w-screen h-screen overflow-hidden bg-black">
-            <div style={{
-                position: 'absolute',
-                width: '1564px',
-                height: '1137px',
-                top: '-1px',
-                left: '-1px',
-            }}>
+        <div className="flex justify-center items-center w-screen h-screen bg-black text-white">
+        <div className="relative w-[1564px] h-[1137px] overflow-hidden bg-black">
+            <div className="absolute w-[1564px] h-[1137px] -top-[1px] -left-[1px]">
                 {/* Background Image */}
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    zIndex: 0
-                }}>
+                <div className="absolute top-0 left-0 w-full h-full z-0">
                     <Image
                         src="/Cyberpunk Scenes - 22x16.png"
                         alt="Cyberpunk Scene"
                         fill
-                        style={{ objectFit: 'cover' }}
+                        className="object-cover"
                     />
                 </div>
 
@@ -85,51 +65,36 @@ function Game() {
                 {gameState.npcs.map((npc, index) => (
                     <div
                         key={index}
+                        className="absolute cursor-pointer z-[4]"
                         style={{
-                            position: 'absolute',
                             left: npc.x,
                             top: npc.y,
-                            width: npc.size + 10,
-                            height: npc.size + 10,
-                            cursor: 'pointer',
-                            zIndex: 4
+                            width: npc.size + 30, // Increased container size
+                            height: npc.size + 30, // Increased container size
                         }}
                         title={npc.name}
                     >
                         {/* Sprite Cropping Container */}
-                        <div
-                            style={{
-                                width: '48px',
-                                height: '64px',
-                                overflow: 'hidden',
-                                position: 'relative',
-                            }}
-                        >
-                            <Image
-                                src={npc.character}
-                                alt={npc.name}
-                                width={144}
-                                height={256}
+                        <div className="w-[64px] h-[64px] overflow-hidden relative"> {/* Doubled container size */}
+                            <div 
+                                className="absolute"
                                 style={{
-                                    position: 'absolute',
-                                    left: `-${npc.animation.currentFrame * 48}px`,
-                                    top: `-${['down', 'left', 'right', 'up'].indexOf(npc.animation.direction) * 64}px`,
+                                    width: '64px', // Doubled sprite width
+                                    height: '64px', // Doubled sprite height
+                                    backgroundImage: `url(${npc.character})`,
+                                    backgroundPosition: `-${npc.animation.currentFrame * 32}px -${['down', 'left', 'right', 'up'].indexOf(npc.animation.direction) * 32}px`,
+                                    imageRendering: 'pixelated',
+                                    transform: 'scale(2)', // Scale up the sprite
+                                    transformOrigin: 'top left'
                                 }}
                             />
                         </div>
 
                         {/* NPC Name above sprite */}
-                        <div
+                        <div className="absolute -top-[20px] w-full text-center text-[#0f0] text-[22px] z-[5]"
                             style={{
-                                position: 'absolute',
-                                top: '-10px',
-                                width: '100%',
-                                textAlign: 'center',
-                                color: '#0f0',
-                                fontSize: '22px',
                                 textShadow: '0 0 5px rgba(0, 255, 0, 0.7)'
-                            }}
-                        >
+                            }}>
                             {npc.name}
                         </div>
                     </div>
@@ -137,26 +102,16 @@ function Game() {
 
                 {/* Combat overlay */}
                 {activeCombat && (
-                    <div
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-5 bg-black/80 text-[#0f0] rounded-lg z-[5] border-2 border-[#0f0]"
                         style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            padding: '20px',
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            color: '#0f0',
-                            borderRadius: '10px',
-                            zIndex: 5,
-                            border: '2px solid #0f0',
                             boxShadow: '0 0 15px rgba(0, 255, 0, 0.5)'
-                        }}
-                    >
-                        <h2 style={{ textAlign: 'center', marginBottom: '10px' }}>Combat!</h2>
-                        <p style={{ textAlign: 'center' }}>{activeCombat.npc1} vs {activeCombat.npc2}</p>
+                        }}>
+                        <h2 className="text-center mb-2.5">Combat!</h2>
+                        <p className="text-center">{activeCombat.npc1} vs {activeCombat.npc2}</p>
                     </div>
                 )}
             </div>
+        </div>
         </div>
     );
 }

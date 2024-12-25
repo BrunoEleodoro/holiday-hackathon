@@ -52,7 +52,7 @@ const gameState = {
             size: 32,
             speed: 2,
             name: "k.jacket.lens",
-            character: "/static/characters/k jacket.png",
+            character: "/static/characters/k%20jacket.png",
             config: createNPCConfig()
         },
         {
@@ -70,7 +70,7 @@ const gameState = {
             size: 32,
             speed: 2,
             name: "rachael.lens",
-            character: "/static/characters/luv combat.png",
+            character: "/static/characters/rachel.png",
             config: createNPCConfig()
         },
         {
