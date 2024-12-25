@@ -5,7 +5,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="w-screen h-screen">
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );

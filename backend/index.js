@@ -24,8 +24,8 @@ const io = new Server(server, {
 
 // Game state
 const gameState = {
-    mapWidth: 1564,
-    mapHeight: 1137,
+    mapWidth: 1564 - 10,
+    mapHeight: 1137 - 10,
     gamePaused: false,
     npcs: [
         {
