@@ -56,24 +56,13 @@ function Game() {
     }
 
     return (
-        <div
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '1564px',
-                height: '1137px',
-                overflow: 'hidden',
-                backgroundColor: 'black'
-            }}
-        >
+        <div className="relative w-screen h-screen overflow-hidden bg-black">
             <div style={{
                 position: 'absolute',
                 width: '1564px',
                 height: '1137px',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)'
+                top: '-1px',
+                left: '-1px',
             }}>
                 {/* Background Image */}
                 <div style={{
@@ -119,12 +108,12 @@ function Game() {
                             <Image
                                 src={npc.character}
                                 alt={npc.name}
-                                width={144}  // Reduced from 288 to 144 (3 frames)
-                                height={256} // Reduced from 512 to 256 (4 directions)
+                                width={144}
+                                height={256}
                                 style={{
                                     position: 'absolute',
-                                    left: `-${npc.animation.currentFrame * 48}px`, // Reduced from 96 to 48
-                                    top: `-${['down', 'left', 'right', 'up'].indexOf(npc.animation.direction) * 64}px`, // Reduced from 128 to 64
+                                    left: `-${npc.animation.currentFrame * 48}px`,
+                                    top: `-${['down', 'left', 'right', 'up'].indexOf(npc.animation.direction) * 64}px`,
                                 }}
                             />
                         </div>
