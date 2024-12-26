@@ -10,7 +10,7 @@ export const config = createConfig(
     appName: 'AI Agent Arena',
     chains: [chains.testnet],
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-    storage: createStorage({ storage: localStorage })
+    storage: typeof window !== 'undefined' ? createStorage({ storage: window.localStorage }) : undefined
   })
 );
 
