@@ -3,38 +3,12 @@
 import { ConnectKitButton } from 'connectkit';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Navbar from '../components/navbar';
 
 export default function Home() {
     const router = useRouter();
   return (
     <main className="min-h-screen bg-gray-900 text-white font-sans">
-      {/* Header */}
-      <header className="w-full py-6 bg-gray-800">
-        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">On-Chain AI RPG</h1>
-          <nav>
-            <ul className="flex space-x-4">
-              <li>
-                <a href="#features" className="hover:text-indigo-400">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#mvp-recap" className="hover:text-indigo-400">
-                  MVP Recap
-                </a>
-              </li>
-              <li>
-                <a href="#get-started" className="hover:text-indigo-400">
-                  Get Started
-                </a>
-                <ConnectKitButton/>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-gray-800 to-gray-900 py-20">
         <div className="max-w-6xl mx-auto px-4 text-center">
@@ -45,12 +19,21 @@ export default function Home() {
             Create AI-driven agents with unique attributes, all on the Lens
             Network. Battle, explore, and trade in a decentralized world.
           </p>
-          <a
+        <div className="flex justify-center gap-4">
+<a
             onClick={() => router.push('/game')}
             className="inline-block bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-md text-white font-semibold cursor-pointer"
           >
-            Join the Hackathon
+            Play Now
           </a>
+          <a
+            onClick={() => router.push('/manage')}
+            className="inline-block bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded-md text-white font-semibold cursor-pointer"
+          >
+            Manage
+          </a>
+            </div> 
+
         </div>
       </section>
 
