@@ -9,13 +9,15 @@ import "hardhat/console.sol";
 
 
 // This is the main building block for smart contracts.
-contract Token {
+contract AttributeToken {
     // Some string type variables to identify the token.
-    string public name = "My Hardhat Token";
-    string public symbol = "MHT";
+    string public name;
+    string public symbol;
+
+    uint256 public decimals = 18;
 
     // The fixed amount of tokens stored in an unsigned integer type variable.
-    uint256 public totalSupply = 1000000;
+    uint256 public totalSupply;
 
     // An address type variable is used to store ethereum accounts.
     address public owner;
@@ -29,8 +31,14 @@ contract Token {
 
     /**
      * Contract initialization.
+     * @param _name The name of the token.
+     * @param _symbol The symbol of the token.
+     * @param _totalSupply The total supply of the token.   
      */
-    constructor() {
+    constructor(string memory _name, string memory _symbol, uint256 _totalSupply) {
+        name = _name;
+        symbol = _symbol;
+        totalSupply = _totalSupply * 10**decimals;
         // The totalSupply is assigned to the transaction sender, which is the
         // account that is deploying the contract.
         balances[msg.sender] = totalSupply;
@@ -55,7 +63,7 @@ contract Token {
             "Transferring from %s to %s %s tokens",
             msg.sender,
             to,
-            amount
+            amount / 10**decimals
         );
 
         // Transfer the amount.

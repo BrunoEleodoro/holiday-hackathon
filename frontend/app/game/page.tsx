@@ -41,18 +41,18 @@ function Game() {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center w-screen h-screen bg-black text-white">
+            <div className="flex justify-center items-center w-screen h-screen text-white bg-black">
                 Loading...
             </div>
         );
     }
 
     return (
-        <div className="flex justify-center items-center w-screen min-h-screen bg-black text-white">
+        <div className="flex justify-center items-center w-screen min-h-screen text-white bg-black">
         <div className="relative w-[1564px] h-[1137px] overflow-hidden ">
             <div className="absolute w-[1564px] h-[1137px] -top-[1px] -left-[1px]">
                 {/* Background Image */}
-                <div className="absolute top-0 left-0 w-full h-full z-0">
+                <div className="absolute top-0 left-0 z-0 w-full h-full">
                     <Image
                         src="/Cyberpunk Scenes - 22x16.png"
                         alt="Cyberpunk Scene"

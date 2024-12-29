@@ -4,7 +4,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 export default async function (hre: HardhatRuntimeEnvironment) {
   const wallet = getWallet();
 
-  await deployContract("Token", [], {
+  await deployContract("AttributeToken", [], {
     hre,
     wallet,
     verify: true,

@@ -3,12 +3,12 @@ import * as hre from "hardhat";
 import { type Contract, type Wallet } from "zksync-ethers";
 import { getWallet, LOCAL_RICH_WALLETS, deployContract } from "../deploy/utils";
 
-describe("Token", function () {
+describe("AttributeToken", function () {
   const owner = getWallet(LOCAL_RICH_WALLETS[0].privateKey);
 
   describe("Deployment", function () {
     it("Should set the right owner", async function () {
-      const token = await deployContract("Token", [], {
+      const token = await deployContract("AttributeToken", ["My Hardhat Token", "MHT", 1000000], {
         wallet: owner,
         silent: true,
       });
@@ -17,7 +17,7 @@ describe("Token", function () {
     });
 
     it("Should assign the total supply of tokens to the owner", async function () {
-      const token = await deployContract("Token", [], {
+      const token = await deployContract("AttributeToken", ["My Hardhat Token", "MHT", 1000000], {
         wallet: owner,
         silent: true,
       });
@@ -33,7 +33,7 @@ describe("Token", function () {
     let token: Contract;
 
     beforeEach(async function () {
-      token = await deployContract("Token", [], {
+      token = await deployContract("AttributeToken", ["My Hardhat Token", "MHT", 1000000], {
         wallet: owner,
         silent: true,
       });
