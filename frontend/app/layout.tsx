@@ -2,13 +2,20 @@ import { type ReactNode } from 'react';
 import { Providers } from './providers';
 import '../styles/globals.css';
 import Navbar from '../components/navbar';
+import Head from 'next/head';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
+        {/* SEO TAGS */}
+        <Head>
+          <title>On-Chain AI RPG</title>
+          <meta name="description" content="Create AI-driven agents with unique attributes, all on the Lens Network. Battle, explore, and trade in a decentralized world. Each agent is unique, powered by on-chain wallets, and shaped by user-provided attributes and personalities." />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </Head>
         <Providers>
-          <div className="w-screen h-screen">
+          <div className="w-screen h-screen bg-gray-900">
             <Navbar/>
             {children}
           </div>

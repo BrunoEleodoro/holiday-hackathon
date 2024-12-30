@@ -1,45 +1,80 @@
 'use client';
 
-import { ConnectKitButton } from 'connectkit';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { storageClient } from "../../../services/storage-client";
-import { account } from '@lens-protocol/metadata';
+import { useLens } from '../../../contexts/LensContext';
+import Image from 'next/image';
+import ConnectLens from '../../../components/connect-lens';
+
+const characters = [
+  'deckard.png',
+  'joi.png',
+  'k casual.png',
+  'k jacket.png',
+  'luv combat.png', 
+  'luv corp.png',
+  'mariette jacket.png',
+  'neanderwallace.png',
+  'pris.png',
+  'rachel.png',
+  'royjacket.png',
+  'royshirtless.png',
+  'sapper.png'
+];
 
 export default function CreateAgentPage() {
     const router = useRouter();
+    const { createAccount, isAuthenticated } = useLens();
     const [formData, setFormData] = useState({
-        name: 'AI-Assistant',
-        bio: 'I am a helpful AI assistant that can engage in natural conversations and help with various tasks.',
-        picture: 'https://placekitten.com/200/200',
-        coverPicture: 'https://placekitten.com/800/200',
-        twitter: '@ai_assistant',
-        dob: '2023-01-01',
-        enabled: true,
-        height: '180cm',
-        settings: 'default'
+        name: '',
+        bio: '',
+        character: characters[0]
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target;
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+            [name]: value
+        }));
+    };
+
+    const handleCharacterSelect = (character: string) => {
+        setFormData(prev => ({
+            ...prev,
+            character
         }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission
-        console.log(formData);
+        
+        try {
+            const username = formData.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            
+            await createAccount({
+                name: formData.name,
+                username,
+                bio: formData.bio,
+                picture: formData.character,
+                character: formData.character
+            });
 
-        const metadata = account({
-            ...formData
-        });
-        const { uri } = await storageClient.uploadFile(new File([JSON.stringify(metadata)], 'metadata.json'), {});
-
-        console.log(uri);
+            router.push('/agents');
+        } catch (error) {
+            console.error('Failed to create agent:', error);
+        }
     };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="flex justify-center items-center min-h-screen text-white bg-gray-900">
+                Please connect your wallet first
+                <br/>
+                <ConnectLens/>
+            </div>
+        );
+    }
 
     return (
         <main className="p-8 min-h-screen font-sans text-white bg-gray-900">
@@ -53,12 +88,17 @@ export default function CreateAgentPage() {
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
+                            maxLength={32}
                             className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
+                            required
                         />
+                        <p className="text-xs text-gray-500">
+                            The name must be 32 characters or less.
+                        </p>
                     </div>
 
                     <div>
-                        <label htmlFor="bio" className="block mb-1 text-sm font-medium">Bio</label>
+                        <label htmlFor="bio" className="block mb-1 text-sm font-medium">AI Agent Instructions / Personality</label>
                         <textarea
                             id="bio"
                             name="bio"
@@ -66,93 +106,37 @@ export default function CreateAgentPage() {
                             onChange={handleChange}
                             className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
                             rows={3}
+                            required
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="picture" className="block mb-1 text-sm font-medium">Profile Picture URL</label>
-                        <input
-                            type="text"
-                            id="picture"
-                            name="picture"
-                            value={formData.picture}
-                            onChange={handleChange}
-                            className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="coverPicture" className="block mb-1 text-sm font-medium">Cover Picture URL</label>
-                        <input
-                            type="text"
-                            id="coverPicture"
-                            name="coverPicture"
-                            value={formData.coverPicture}
-                            onChange={handleChange}
-                            className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="twitter" className="block mb-1 text-sm font-medium">Twitter URL</label>
-                        <input
-                            type="url"
-                            id="twitter"
-                            name="twitter"
-                            value={formData.twitter}
-                            onChange={handleChange}
-                            className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="dob" className="block mb-1 text-sm font-medium">Date of Birth</label>
-                        <input
-                            type="datetime-local"
-                            id="dob"
-                            name="dob"
-                            value={formData.dob}
-                            onChange={handleChange}
-                            className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
-                        />
-                    </div>
-
-                    <div className="flex items-center">
-                        <input
-                            type="checkbox"
-                            id="enabled"
-                            name="enabled"
-                            checked={formData.enabled}
-                            onChange={handleChange}
-                            className="mr-2"
-                        />
-                        <label htmlFor="enabled" className="text-sm font-medium">Enabled</label>
-                    </div>
-
-                    <div>
-                        <label htmlFor="height" className="block mb-1 text-sm font-medium">Height</label>
-                        <input
-                            type="number"
-                            id="height"
-                            name="height"
-                            value={formData.height}
-                            onChange={handleChange}
-                            step="0.01"
-                            className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
-                        />
-                    </div>
-
-                    <div>
-                        <label htmlFor="settings" className="block mb-1 text-sm font-medium">Settings (JSON)</label>
-                        <input
-                            type="text"
-                            id="settings"
-                            name="settings"
-                            value={formData.settings}
-                            onChange={handleChange}
-                            placeholder='{"theme": "dark"}'
-                            className="px-3 py-2 w-full text-white bg-gray-800 rounded-md"
-                        />
+                        <label className="block mb-1 text-sm font-medium">Character</label>
+                        <div className="grid grid-cols-4 gap-4">
+                            {characters.map((char) => (
+                                <div 
+                                    key={char}
+                                    className={`flex flex-col items-center justify-center cursor-pointer p-2 rounded-lg ${formData.character === char ? 'bg-blue-600' : 'bg-gray-800'}`}
+                                    onClick={() => handleCharacterSelect(char)}
+                                >
+                                    <div className="w-[64px] h-[64px] overflow-hidden relative">
+                                        <div 
+                                            className="absolute"
+                                            style={{
+                                                width: '64px',
+                                                height: '64px',
+                                                backgroundImage: `url(/static/characters/${encodeURIComponent(char)})`,
+                                                backgroundPosition: '0 0',
+                                                imageRendering: 'pixelated',
+                                                transform: 'scale(2)',
+                                                transformOrigin: 'top left'
+                                            }}
+                                        />
+                                    </div>
+                                    <p className="mt-2 text-xs text-center">{char.replace('.png', '')}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -160,7 +144,7 @@ export default function CreateAgentPage() {
                     type="submit"
                     className="px-4 py-2 w-full font-bold text-white bg-blue-600 rounded hover:bg-blue-700"
                 >
-                    Create Profile
+                    Create Agent
                 </button>
             </form>
         </main>
