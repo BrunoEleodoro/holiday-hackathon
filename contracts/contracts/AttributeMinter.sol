@@ -30,8 +30,8 @@ contract AttributeMinter {
     IERC20 public vitToken; // VIT
 
     // Conversion: 1 WETH = X attribute tokens
-    // e.g., 1 WETH = 1000 "attribute units"
-    uint256 public constant CONVERSION_RATE = 1000;
+    // e.g., 1 WETH = 100000 "attribute units"
+    uint256 public constant CONVERSION_RATE = 100000;
 
     // This address (the contract) will hold the WETH users stake.
     // You could forward it to a treasury address if you prefer.

@@ -4,8 +4,8 @@
 // It will be used by the Solidity compiler to validate its version.
 pragma solidity ^0.8.20;
 
-// We import this library to be able to use console.log
-import "hardhat/console.sol";
+// // We import this library to be able to use console.log
+// import "hardhat/console.sol";
 
 
 // This is the main building block for smart contracts.
@@ -57,14 +57,14 @@ contract AttributeToken {
         // transaction will revert.
         require(balances[msg.sender] >= amount, "Not enough tokens");
 
-        // We can print messages and values using console.log, a feature of
-        // Hardhat Network:
-        console.log(
-            "Transferring from %s to %s %s tokens",
-            msg.sender,
-            to,
-            amount / 10**decimals
-        );
+        // // We can print messages and values using console.log, a feature of
+        // // Hardhat Network:
+        // console.log(
+        //     "Transferring from %s to %s %s tokens",
+        //     msg.sender,
+        //     to,
+        //     amount / 10**decimals
+        // );
 
         // Transfer the amount.
         balances[msg.sender] -= amount;
