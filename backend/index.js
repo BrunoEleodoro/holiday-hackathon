@@ -249,5 +249,4 @@ updateNPCsFromContract().then(() => {
 });
 
 // Add periodic NPC updates (every 5 minutes)
-// every 10 seconds
-setInterval(updateNPCsFromContract, 10 * 1000);
+setInterval(updateNPCsFromContract, 5 * 60 * 1000);
