@@ -3,11 +3,11 @@
 import { ConnectKitButton } from 'connectkit';
 import Link from 'next/link';
 import { useRouter, } from 'next/navigation';
-import { useLens } from '../contexts/LensContext';
+// import { useLens } from '../contexts/LensContext';
 
 export default function Navbar() {
   const router = useRouter();
-  const { isAuthenticated, createAccount, createApp, connect, accounts } = useLens();
+  // const { isAuthenticated, createAccount, createApp, connect, accounts } = useLens();
   
   return (
     <header className="py-6 w-full bg-gray-800">
@@ -17,12 +17,12 @@ export default function Navbar() {
           <ul className="flex items-center space-x-4">
             <li>
               <Link href="#" onClick={() => {
-                if (isAuthenticated) {
-                  // createApp()
-                  createAccount("agentarena-1-agent","agentarena-1-agent")
-                } else {
-                  connect()
-                }
+                // if (isAuthenticated) {
+                //   // createApp()
+                //   // createAccount("agentarena-1-agent","agentarena-1-agent")
+                // } else {
+                //   connect()
+                // }
 
               }} className="text-white hover:text-indigo-400">
                 Create Game

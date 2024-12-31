@@ -56,38 +56,38 @@ export default function AgentCard({ agentId }: AgentCardProps) {
     abi: factoryAbi.abi,
     functionName: "agentWallets",
     args: [BigInt(agentId)],
-  });
+  }) as { data: string; isSuccess: boolean };
 
   // Get agent details from wallet
   const { data: name } = useReadContract({
-    address: walletAddress,
+    address: walletAddress as `0x${string}`,
     abi: agentWalletAbi,
     functionName: "name",
-  });
+  }) as { data: string; isSuccess: boolean };
 
   const { data: bio } = useReadContract({
-    address: walletAddress,
+    address: walletAddress as `0x${string}`,
     abi: agentWalletAbi,
     functionName: "bio",
-  });
+  }) as { data: string; isSuccess: boolean };
 
   const { data: character } = useReadContract({
-    address: walletAddress,
+    address: walletAddress as `0x${string}`,
     abi: agentWalletAbi,
     functionName: "character",
-  });
+  }) as { data: string; isSuccess: boolean };
 
   const { data: balance } = useReadContract({
-    address: walletAddress,
+    address: walletAddress as `0x${string}`,
     abi: agentWalletAbi,
     functionName: "wethBalance",
-  });
+  }) as { data: string; isSuccess: boolean };
 
   const { data: isActive } = useReadContract({
-    address: walletAddress,
+    address: walletAddress as `0x${string}`,
     abi: agentWalletAbi,
     functionName: "withdrawalsAllowed",
-  });
+  }) as { data: boolean; isSuccess: boolean };
 
   if (!walletAddress) return null;
 
@@ -125,13 +125,20 @@ export default function AgentCard({ agentId }: AgentCardProps) {
         </div>
         <div className="flex justify-end">
           {character && (
-            <Image
-              src={`/static/characters/${character}`}
-              alt={`${name} character`}
-              width={112}
-              height={128}
-              className="pixel-art"
-            />
+            <div className="w-[128px] h-[128px] overflow-hidden relative">
+              <div
+                className="absolute"
+                style={{
+                  width: "64px",
+                  height: "64px",
+                  backgroundImage: `url(/static/characters/${encodeURIComponent(character)})`,
+                  backgroundPosition: "0 0", 
+                  imageRendering: "pixelated",
+                  transform: "scale(4)",
+                  transformOrigin: "top left"
+                }}
+              />
+            </div>
           )}
         </div>
       </div>
@@ -144,7 +151,7 @@ export default function AgentCard({ agentId }: AgentCardProps) {
           View Details
         </button>
         <a
-          href={`/?follow=${name}`}
+          href={`/game/?follow=${name}`}
           className="px-4 py-2 bg-green-500 rounded watch-live-btn hover:bg-green-600"
         >
           Watch Live
@@ -152,4 +159,4 @@ export default function AgentCard({ agentId }: AgentCardProps) {
       </div>
     </div>
   );
-} 
+}

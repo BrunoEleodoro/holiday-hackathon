@@ -2,13 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useLens } from "../../../contexts/LensContext";
+// import { useLens } from "../../../contexts/LensContext";
 import Image from "next/image";
 import ConnectLens from "../../../components/connect-lens";
 import { useWriteContract } from "wagmi";
 import { useAccount } from "wagmi";
 import abi from "../../../abis/AgentFactory.json";
 import { AGENT_FACTORY_ADDRESS } from "../../constants";
+import { ConnectKitButton } from "connectkit";
 
 const characters = [
   "deckard.png",
@@ -28,7 +29,7 @@ const characters = [
 
 export default function CreateAgentPage() {
   const router = useRouter();
-  const { createAccount, isAuthenticated } = useLens();
+//   const { createAccount, isAuthenticated } = useLens();
   const { writeContract, isPending, isSuccess, isError, error, data } =
     useWriteContract();
   const { address } = useAccount();
@@ -86,12 +87,12 @@ export default function CreateAgentPage() {
     // }
   };
 
-  if (!isAuthenticated) {
+  if (!address) {
     return (
       <div className="flex justify-center items-center min-h-screen text-white bg-gray-900">
         Please connect your wallet first
         <br />
-        <ConnectLens />
+        <ConnectKitButton />
       </div>
     );
   }

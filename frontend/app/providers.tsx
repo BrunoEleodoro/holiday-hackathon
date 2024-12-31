@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { type ReactNode } from 'react';
-import { WagmiProvider } from 'wagmi';
-import { config } from '../config';
-import { ConnectKitProvider } from 'connectkit';
-import { lensClient } from '../services/lens-client';
-import { LensProvider } from '../contexts/LensContext';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { type ReactNode } from "react";
+import { WagmiProvider } from "wagmi";
+import { config } from "../config";
+import { ConnectKitProvider } from "connectkit";
+import { lensClient } from "../services/lens-client";
+// import { LensProvider } from '../contexts/LensContext';
 
 const queryClient = new QueryClient();
 
@@ -15,9 +15,9 @@ export function Providers(props: { children: ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider>
-          <LensProvider>
-            {props.children}
-          </LensProvider>
+          {/* <LensProvider> */}
+          {props.children}
+          {/* </LensProvider> */}
         </ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
