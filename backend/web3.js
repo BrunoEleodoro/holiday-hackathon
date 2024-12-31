@@ -35,7 +35,7 @@ async function getAllAgents() {
                 agents.push({
                     id: agentId.toString(),
                     name,
-                    character: '/static/characters/' + character,
+                    character: '/static/characters/' + encodeURIComponent(character),
                     size: 32,
                     speed: 2,
                     config: createNPCConfig()

@@ -206,7 +206,6 @@ const PORT = 3003;
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
 // Add this function to update NPCs
 async function updateNPCsFromContract() {
     try {
@@ -220,11 +219,24 @@ async function updateNPCsFromContract() {
             );
             
             // Update gameState.npcs with new positions
-            gameState.npcs = agents.map((agent, index) => ({
-                ...agent,
-                x: positions[index].x,
-                y: positions[index].y
-            }));
+            const existingIds = gameState.npcs.map(npc => npc.id);
+            const newAgents = agents.filter(agent => !existingIds.includes(agent.id));
+            
+            if (newAgents.length > 0) {
+                const newPositions = getEvenlyDistributedPositions(
+                    newAgents.length,
+                    gameState.mapWidth,
+                    gameState.mapHeight
+                );
+                
+                const newNPCs = newAgents.map((agent, index) => ({
+                    ...agent,
+                    x: newPositions[index].x,
+                    y: newPositions[index].y
+                }));
+                
+                gameState.npcs = [...gameState.npcs, ...newNPCs];
+            }
         }
     } catch (error) {
         console.error("Error updating NPCs:", error);
@@ -237,4 +249,5 @@ updateNPCsFromContract().then(() => {
 });
 
 // Add periodic NPC updates (every 5 minutes)
-setInterval(updateNPCsFromContract, 5 * 60 * 1000);
+// every 10 seconds
+setInterval(updateNPCsFromContract, 10 * 1000);
