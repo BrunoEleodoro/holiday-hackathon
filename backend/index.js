@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = express();
 const cors = require('cors');
+const { getAllAgents, createNPCConfig } = require('./web3');
 
 // Configure CORS for Express
 app.use(cors({
@@ -27,62 +28,7 @@ const gameState = {
     mapWidth: 1564 - 10,
     mapHeight: 1137 - 10,
     gamePaused: false,
-    npcs: [
-        {
-            x: 200,
-            y: 200,
-            size: 32,
-            speed: 2,
-            name: "deckard.lens",
-            character: "/static/characters/deckard.png",
-            config: createNPCConfig()
-        },
-        {
-            x: 400,
-            y: 400,
-            size: 32,
-            speed: 2,
-            name: "johndoe.lens",
-            character: "/static/characters/joi.png",
-            config: createNPCConfig()
-        },
-        {
-            x: 600,
-            y: 600,
-            size: 32,
-            speed: 2,
-            name: "k.jacket.lens",
-            character: "/static/characters/k%20jacket.png",
-            config: createNPCConfig()
-        },
-        {
-            x: 800,
-            y: 800,
-            size: 32,
-            speed: 2,
-            name: "pris.lens",
-            character: "/static/characters/pris.png",
-            config: createNPCConfig()
-        },
-        {
-            x: 1000,
-            y: 1000,
-            size: 32,
-            speed: 2,
-            name: "rachael.lens",
-            character: "/static/characters/rachel.png",
-            config: createNPCConfig()
-        },
-        {
-            x: 1200,
-            y: 1000,
-            size: 32,
-            speed: 2,
-            name: "zowie.lens",
-            character: "/static/characters/royshirtless.png",
-            config: createNPCConfig()
-        }
-    ],
+    npcs: [],
     activeCombat: null,
     combatLog: []
 };
@@ -125,24 +71,7 @@ function getRandomPositions(numNPCs, mapWidth, mapHeight) {
 }
 
 // NPC configuration template
-function createNPCConfig() {
-    return {
-        frameWidth: 96,  // 288/3 frames per row
-        frameHeight: 96, // 384/4 rows
-        animations: {
-            down: { y: 0, frames: 3 },
-            left: { y: 1, frames: 3 },
-            right: { y: 2, frames: 3 },
-            up: { y: 3, frames: 3 }
-        },
-        currentFrame: 0,
-        frameCount: 0,
-        direction: 'down',
-        moveTimer: 0,
-        moveDuration: 60,
-        isMoving: false
-    };
-}
+
 
 function updateNPC(npc) {
     if (gameState.gamePaused) return;
@@ -277,3 +206,35 @@ const PORT = 3003;
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+// Add this function to update NPCs
+async function updateNPCsFromContract() {
+    try {
+        const agents = await getAllAgents();
+        if (agents.length > 0) {
+            // Get positions for all agents
+            const positions = getEvenlyDistributedPositions(
+                agents.length,
+                gameState.mapWidth,
+                gameState.mapHeight
+            );
+            
+            // Update gameState.npcs with new positions
+            gameState.npcs = agents.map((agent, index) => ({
+                ...agent,
+                x: positions[index].x,
+                y: positions[index].y
+            }));
+        }
+    } catch (error) {
+        console.error("Error updating NPCs:", error);
+    }
+}
+
+// Add initial NPC fetch when server starts
+updateNPCsFromContract().then(() => {
+    console.log(`Loaded ${gameState.npcs.length} NPCs from blockchain`);
+});
+
+// Add periodic NPC updates (every 5 minutes)
+setInterval(updateNPCsFromContract, 5 * 60 * 1000);
