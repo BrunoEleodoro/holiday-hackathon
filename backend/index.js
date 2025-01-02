@@ -124,7 +124,7 @@ function startConversation(npc1, npc2) {
                 });
 
                 conversation.messageCount++;
-                if (conversation.messageCount >= 5) {
+                if (conversation.messageCount >= 2) {
                     clearInterval(conversation.interval);
                     gameState.activeConversations.delete(conversationId);
                     npc1.isInConversation = false;
