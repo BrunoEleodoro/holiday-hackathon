@@ -6,6 +6,9 @@ const FACTORY_ADDRESS = "0x14E19d15094911B87cFF482F33fD1468eF86feb7";
 const factoryAbi = require("./abis/AgentFactory.json");
 const agentWalletAbi = require("./abis/AgentWallet.json");
 
+const blacklist = require("./blacklist.json");
+const blacklistSet = new Set(blacklist.map(addr => addr.toLowerCase()));
+
 const provider = new ethers.providers.JsonRpcProvider(RPC_URL);
 const factory = new ethers.Contract(FACTORY_ADDRESS, factoryAbi.abi, provider);
 
@@ -22,6 +25,12 @@ async function getAllAgents() {
                     break;
                 }
 
+                if (blacklistSet.has(walletAddress.toLowerCase())) {
+                    console.log("Skipping blacklisted agent:", walletAddress);
+                    agentId++;
+                    continue;
+                }
+
                 // Create contract instance for the agent wallet
                 const agentWallet = new ethers.Contract(walletAddress, agentWalletAbi.abi, provider);
 
@@ -35,6 +44,7 @@ async function getAllAgents() {
                 agents.push({
                     id: agentId.toString(),
                     name,
+                    instructions: bio,
                     character: '/static/characters/' + encodeURIComponent(character),
                     size: 32,
                     speed: 2,

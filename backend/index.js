@@ -1,13 +1,18 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const app = express();
 const cors = require('cors');
 const { getAllAgents, createNPCConfig } = require('./web3');
+const blacklist = require('./blacklist.json');
+const { askSimple } = require('./openai');
 
 // Configure CORS for Express
 app.use(cors({
-    origin: "*", 
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -29,9 +34,22 @@ const gameState = {
     mapHeight: 1137 - 10,
     gamePaused: false,
     npcs: [],
-    activeCombat: null,
+    activeConversations: new Map(), // Track ongoing conversations
     combatLog: []
 };
+
+// Sample conversation messages
+const sampleMessages = [
+    "How are you doing?",
+    "Nice weather we're having!",
+    "Have you heard the latest news?",
+    "I must be going now.",
+    "What brings you here?",
+    "Interesting outfit!",
+    "Care to join me on an adventure?",
+    "Watch where you're going!",
+    "Let's be friends!"
+];
 
 // Function to get evenly distributed positions
 function getEvenlyDistributedPositions(numNPCs, mapWidth, mapHeight) {
@@ -70,11 +88,61 @@ function getRandomPositions(numNPCs, mapWidth, mapHeight) {
     return positions;
 }
 
-// NPC configuration template
+// Function to move NPCs away from each other after conversation
+function moveNPCsApart(npc1, npc2) {
+    const angle = Math.random() * 2 * Math.PI; // Random angle
+    const distance = 100; // Distance to move apart
 
+    // Calculate new positions
+    const newX1 = npc1.x + Math.cos(angle) * distance;
+    const newY1 = npc1.y + Math.sin(angle) * distance;
+    const newX2 = npc2.x - Math.cos(angle) * distance;
+    const newY2 = npc2.y - Math.sin(angle) * distance;
+
+    // Ensure new positions are within bounds
+    npc1.x = Math.max(0, Math.min(gameState.mapWidth - npc1.size, newX1));
+    npc1.y = Math.max(0, Math.min(gameState.mapHeight - npc1.size, newY1));
+    npc2.x = Math.max(0, Math.min(gameState.mapWidth - npc2.size, newX2));
+    npc2.y = Math.max(0, Math.min(gameState.mapHeight - npc2.size, newY2));
+}
+
+function startConversation(npc1, npc2) {
+    const conversationId = `${npc1.id}-${npc2.id}`;
+    if (!gameState.activeConversations.has(conversationId)) {
+        const conversation = {
+            participants: [npc1.id, npc2.id],
+            messageCount: 0,
+            interval: setInterval(async () => {
+                const speaker = Math.random() < 0.5 ? npc1 : npc2;
+                const interaction = `Hi ${npc2.name}, my name is ${speaker.name} and I'm a ${speaker.character}.    ${sampleMessages[Math.floor(Math.random() * sampleMessages.length)]}`;
+                const message = await askSimple(speaker.bio, interaction);
+
+                io.emit('npcMessage', {
+                    speaker: speaker.name,
+                    message: message,
+                    conversationId
+                });
+
+                conversation.messageCount++;
+                if (conversation.messageCount >= 5) {
+                    clearInterval(conversation.interval);
+                    gameState.activeConversations.delete(conversationId);
+                    npc1.isInConversation = false;
+                    npc2.isInConversation = false;
+                    moveNPCsApart(npc1, npc2); // Move NPCs apart after conversation
+                }
+            }, 10000)
+        };
+
+        npc1.isInConversation = true;
+        npc2.isInConversation = true;
+        gameState.activeConversations.set(conversationId, conversation);
+    }
+}
 
 function updateNPC(npc) {
-    if (gameState.gamePaused) return;
+    if (npc.isInConversation) return;
+
     const npcConfig = npc.config;
     npcConfig.moveTimer++;
 
@@ -118,6 +186,7 @@ function updateNPC(npc) {
 }
 
 function checkCollisions() {
+    const collisions = [];
     for (let i = 0; i < gameState.npcs.length; i++) {
         for (let j = i + 1; j < gameState.npcs.length; j++) {
             const npc1 = gameState.npcs[i];
@@ -127,74 +196,48 @@ function checkCollisions() {
             const dy = npc1.y - npc2.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance < npc1.size) {
-                return {
-                    collision: true,
-                    npc1: npc1.name,
-                    npc2: npc2.name
-                };
+            if (distance < npc1.size && !npc1.isInConversation && !npc2.isInConversation) {
+                collisions.push({ npc1, npc2 });
             }
         }
     }
-    return { collision: false };
+    return collisions;
 }
 
 function gameLoop() {
-    if (!gameState.gamePaused) {
-        gameState.npcs.forEach(updateNPC);
-        const collisionResult = checkCollisions();
-        // TODO: Implement combat logic
-        if (collisionResult.collision && false) {
-            gameState.gamePaused = true;
-            gameState.activeCombat = {
-                npc1: collisionResult.npc1,
-                npc2: collisionResult.npc2
-            };
+    gameState.npcs.forEach(updateNPC);
+    const collisions = checkCollisions();
 
-            io.emit('collision', {
-                npc1: collisionResult.npc1,
-                npc2: collisionResult.npc2
-            });
+    collisions.forEach(({ npc1, npc2 }) => {
+        startConversation(npc1, npc2);
+    });
 
-            setTimeout(() => {
-                gameState.gamePaused = false;
-                gameState.activeCombat = null;
-                gameState.combatLog = [];
-                io.emit('gameResumed');
-            }, 5000);
-        }
-
-        io.emit('gameState', {
-            npcs: gameState.npcs.map(npc => ({
-                x: npc.x,
-                y: npc.y,
-                name: npc.name,
-                character: npc.character,
-                size: npc.size,
-                animation: {
-                    direction: npc.config.direction,
-                    currentFrame: npc.config.currentFrame,
-                    isMoving: npc.config.isMoving
-                }
-            })),
-            timestamp: Date.now()
-        });
-    }
+    io.emit('gameState', {
+        npcs: gameState.npcs.map(npc => ({
+            x: npc.x,
+            y: npc.y,
+            name: npc.name,
+            character: npc.character,
+            size: npc.size,
+            isInConversation: npc.isInConversation,
+            animation: {
+                direction: npc.config.direction,
+                currentFrame: npc.config.currentFrame,
+                isMoving: npc.config.isMoving
+            }
+        })),
+        timestamp: Date.now()
+    });
 }
 
 app.use(express.static('public'));
 app.use(express.json());
+app.route('/blacklist').get((req, res) => {
+    res.json(blacklist);
+});
 
 io.on('connection', (socket) => {
     console.log('A user connected');
-
-    if (gameState.activeCombat) {
-        socket.emit('collision', {
-            npc1: gameState.activeCombat.npc1,
-            npc2: gameState.activeCombat.npc2
-        });
-    }
-
     socket.on('disconnect', () => {
         console.log('A user disconnected');
     });
@@ -206,35 +249,31 @@ const PORT = 3003;
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-// Add this function to update NPCs
+
 async function updateNPCsFromContract() {
     try {
         const agents = await getAllAgents();
         if (agents.length > 0) {
-            // Get positions for all agents
-            const positions = getEvenlyDistributedPositions(
-                agents.length,
-                gameState.mapWidth,
-                gameState.mapHeight
-            );
-            
-            // Update gameState.npcs with new positions
-            const existingIds = gameState.npcs.map(npc => npc.id);
-            const newAgents = agents.filter(agent => !existingIds.includes(agent.id));
-            
+            // Get existing NPCs by ID
+            const existingNPCs = new Map(gameState.npcs.map(npc => [npc.id, npc]));
+
+            // Filter out new agents
+            const newAgents = agents.filter(agent => !existingNPCs.has(agent.id));
+
             if (newAgents.length > 0) {
                 const newPositions = getEvenlyDistributedPositions(
                     newAgents.length,
                     gameState.mapWidth,
                     gameState.mapHeight
                 );
-                
+
                 const newNPCs = newAgents.map((agent, index) => ({
                     ...agent,
                     x: newPositions[index].x,
-                    y: newPositions[index].y
+                    y: newPositions[index].y,
+                    isInConversation: false
                 }));
-                
+
                 gameState.npcs = [...gameState.npcs, ...newNPCs];
             }
         }

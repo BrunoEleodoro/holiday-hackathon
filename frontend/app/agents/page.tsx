@@ -7,6 +7,7 @@ import abi from "../../abis/AgentFactory.json";
 import AgentCard from "../../components/AgentCard";
 // import { useLens } from "../../contexts/LensContext";
 import { AGENT_FACTORY_ADDRESS } from "../constants";
+import { useEffect, useState } from "react";
 
 // Mock data types
 interface AgentStats {
@@ -27,6 +28,7 @@ interface AgentDetails {
 export default function AgentsPage() {
   const router = useRouter();
   const { address } = useAccount();
+  const [blacklist, setBlacklist] = useState<string[]>([]);
 
   const { data: agentIds, isSuccess } = useReadContract({
     abi: abi.abi,
@@ -34,6 +36,21 @@ export default function AgentsPage() {
     functionName: "getAgentsByOwner",
     args: [address],
   }) as { data: string[]; isSuccess: boolean };
+
+  useEffect(() => {
+    const fetchBlacklist = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/blacklist`);
+        const data = await response.json();
+        setBlacklist(data);
+      } catch (error) {
+        console.error("Error fetching blacklist:", error);
+        setBlacklist([]);
+      }
+    };
+
+    fetchBlacklist();
+  }, []);
 
   return (
     <main className="min-h-screen font-sans text-white bg-gray-900">
@@ -49,10 +66,10 @@ export default function AgentsPage() {
               Create Agent
             </button>
           </div>
-          <div className="grid gap-6 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-6 mt-4">
             {isSuccess &&
               agentIds.map((id: string) => (
-                <AgentCard key={id.toString()} agentId={id.toString()} />
+                <AgentCard key={id.toString()} agentId={id.toString()} blacklist={blacklist} />
               ))}
           </div>
         </div>
