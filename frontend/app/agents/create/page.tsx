@@ -10,6 +10,7 @@ import { useAccount } from "wagmi";
 import abi from "../../../abis/AgentFactory.json";
 import { AGENT_FACTORY_ADDRESS } from "../../constants";
 import { ConnectKitButton } from "connectkit";
+import { chains } from "@lens-network/sdk/viem";
 
 const characters = [
   "deckard.png",
@@ -68,6 +69,8 @@ export default function CreateAgentPage() {
       abi: abi.abi,
       address: AGENT_FACTORY_ADDRESS,
       functionName: "createAgent",
+      chainId: chains.testnet.id,
+      chain: chains.testnet,
       args: [formData.name, formData.bio, formData.character],
     });
     // try {
@@ -179,7 +182,7 @@ export default function CreateAgentPage() {
             <div className="flex justify-center items-center w-full">
               {/* spinner */}
               {/* tailwindcss spinner */}
-              <div className="w-4 h-4 border-4 border-t-4 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 rounded-full border-4 border-t-4 border-white animate-spin border-t-transparent"></div>
             </div>
           ) : (
             "Create Agent"
