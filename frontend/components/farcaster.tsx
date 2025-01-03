@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import sdk, { type FrameContext } from "@farcaster/frame-sdk";
+import Game from "./Game";
 
 export default function Farcaster() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -41,6 +42,7 @@ export default function Farcaster() {
         Username: {context?.user.username}<br/>
         FID: {context?.user.fid} 
       </div>
+      <Game />
     </div>
   );
 }
