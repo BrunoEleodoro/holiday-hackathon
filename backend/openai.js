@@ -19,7 +19,7 @@ async function createAssistant(name, userInstructions) {
 async function askSimple(bio, message) {
     console.log("asking simple");
     const completion = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
         messages: [
             { role: "system", content: 'You are a character on a RPG Cyberpunk game. you send only short messages. description: ' + bio },
             {
