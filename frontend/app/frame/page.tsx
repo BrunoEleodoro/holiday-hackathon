@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: 'AI Agent Arena',
   description: 'AI Agent Arena Game',
@@ -10,9 +12,9 @@ export const metadata = {
       button: {
         title: "Play Now",
         action: {
-          type: "launch_frame", 
+          type: "launch_frame",
           name: "AI Agent Arena",
-          url: "https://agent-arena.xyz/frame",
+          url: "https://agent-arena.xyz/farcaster",
           splashImageUrl: "https://agent-arena.xyz/logo.png",
           splashBackgroundColor: "#131313"
         }
@@ -22,5 +24,12 @@ export const metadata = {
 }
 
 export default function Frame() {
-  return <div>Frame</div>
+
+  return <div>
+    <div className="flex justify-center items-center h-screen text-neon-blue hover:text-neon-pink">
+      <Link href="/farcaster/agentarena-1-agent" className="px-4 py-2 rounded-lg border text-neon-blue hover:text-neon-pink border-neon-blue">
+        Enter
+      </Link>
+    </div>
+  </div>
 }
