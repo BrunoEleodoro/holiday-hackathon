@@ -3,6 +3,7 @@ import { Providers } from './providers';
 import '../styles/globals.css';
 import Navbar from '../components/navbar';
 import Head from 'next/head';
+import Farcaster from '@/components/farcaster';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -17,7 +18,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <div className="w-screen h-screen bg-gray-900">
             <Navbar />
-            {children}
+            <Farcaster />
+            {/* {children} */}
           </div>
         </Providers>
       </body>

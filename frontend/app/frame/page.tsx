@@ -1,3 +1,5 @@
+import Farcaster from "@/components/farcaster";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
 export const metadata = {
@@ -23,12 +25,17 @@ export const metadata = {
   }
 }
 
+// const Farcaster = dynamic(() => import("@/components/farcaster"), {
+//   ssr: false,
+// });
+
 export default function Frame() {
   return <div>
-    <div className="flex justify-center items-center h-screen text-neon-blue hover:text-neon-pink">
+    <Farcaster />
+    {/* <div className="flex justify-center items-center h-screen text-neon-blue hover:text-neon-pink">
       <Link href="/farcaster/agentarena-1-agent" className="px-4 py-2 rounded-lg border text-neon-blue hover:text-neon-pink border-neon-blue">
         Enter
       </Link>
-    </div>
+    </div> */}
   </div>
 }
