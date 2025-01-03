@@ -90,7 +90,7 @@ export default function Home() {
               </li>
               <li>
                 <strong className="text-neon-pink">TOKEN_UPGRADES</strong> — USE $AGNT TOKENS
-                TO ENHANCE YOUR AGENT'S ABILITIES.
+                TO ENHANCE YOUR AGENT&apos;S ABILITIES.
               </li>
               <li>
                 <strong className="text-neon-pink">COMBAT_SYSTEM</strong> — ALGORITHMIC POWER
