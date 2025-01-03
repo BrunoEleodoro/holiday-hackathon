@@ -12,7 +12,7 @@ export const metadata = {
         action: {
           type: "launch_frame", 
           name: "AI Agent Arena",
-          url: "https://agent-arena.xyz",
+          url: "https://agent-arena.xyz/frame",
           splashImageUrl: "https://agent-arena.xyz/logo.png",
           splashBackgroundColor: "#131313"
         }
