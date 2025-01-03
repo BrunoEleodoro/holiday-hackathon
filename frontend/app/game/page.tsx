@@ -9,6 +9,7 @@ interface Message {
     speaker: string;
     message: string;
     conversationId: string;
+    timestamp?: number;
 }
 
 function Game() {
@@ -44,15 +45,39 @@ function Game() {
         socket.on('npcMessage', (message: Message) => {
             setConversations(prev => {
                 const conversationMessages = prev[message.conversationId] || [];
+                const newMessage = {
+                    ...message,
+                    timestamp: Date.now()
+                };
                 return {
                     ...prev,
-                    [message.conversationId]: [...conversationMessages, message].slice(-3) // Keep last 3 messages
+                    [message.conversationId]: [...conversationMessages, newMessage].slice(-3) // Keep last 3 messages
                 };
             });
         });
 
+        // Cleanup old messages every second
+        const cleanup = setInterval(() => {
+            setConversations(prev => {
+                const now = Date.now();
+                const filtered: {[key: string]: Message[]} = {};
+                
+                Object.entries(prev).forEach(([convId, messages]) => {
+                    const validMessages = messages.filter(msg => 
+                        msg.timestamp && now - msg.timestamp < 4000 // Remove messages older than 4 seconds
+                    );
+                    if (validMessages.length > 0) {
+                        filtered[convId] = validMessages;
+                    }
+                });
+                
+                return filtered;
+            });
+        }, 1000);
+
         return () => {
             socket.disconnect();
+            clearInterval(cleanup);
         };
     }, []);
 
