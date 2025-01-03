@@ -12,7 +12,15 @@ interface Message {
     timestamp?: number;
 }
 
-export default function Game() {
+interface GameProps {
+    farcaster: boolean;
+    mapPosition: {
+        x: number;
+        y: number;
+    };
+}
+
+export default function Game({ farcaster, mapPosition }: GameProps) {
     const [gameState, setGameState] = useState<GameState>({
         npcs: [],
         activeCombat: null,
@@ -90,9 +98,15 @@ export default function Game() {
     }
 
     return (
-        <div className="flex justify-center items-center w-screen min-h-screen text-white bg-black">
-            <div className="relative w-[1564px] h-[1137px] overflow-hidden ">
-                <div className="absolute w-[1564px] h-[1137px] -top-[1px] -left-[1px]">
+        <div className={`flex justify-center items-center ${farcaster ? 'w-screen' : 'w-[1564px]'} min-h-screen text-white bg-black`}>
+            <div className={`relative w-[1564px] h-[1137px] ${farcaster ? 'overflow-hidden' : ''}`}>
+                <div 
+                    className="absolute w-[1564px] h-[1137px]"
+                    style={{
+                        transform: farcaster ? `translate(${mapPosition.x}px, ${mapPosition.y}px)` : 'none',
+                        transition: 'transform 0.3s ease-out'
+                    }}
+                >
                     {/* Background Image */}
                     <div className="absolute top-0 left-0 z-0 w-full h-full">
                         <Image

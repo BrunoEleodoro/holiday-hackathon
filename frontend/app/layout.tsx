@@ -6,6 +6,7 @@ import Head from 'next/head';
 import Farcaster from '@/components/farcaster';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const isIframe = typeof window !== 'undefined' && window.self !== window.top;
 
   return (
     <html lang="en">
@@ -18,9 +19,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </Head>
         <Providers>
           <div className="w-screen h-screen bg-gray-900">
-            {/* {!isIframe && <Navbar />} */}
-            <Farcaster />
-            {/* {!isIframe && children} */}
+            {!isIframe && <Navbar />}
+            {isIframe && <Farcaster />}
+            {!isIframe && children}
           </div>
         </Providers>
       </body>
