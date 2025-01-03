@@ -35,11 +35,11 @@ export default function Farcaster() {
       paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
       paddingRight: context?.client.safeAreaInsets?.right ?? 0,
     }}>
-      <div>
+      <div className="text-white">
         Client FID: {context?.client.clientFid}<br/>
         Display Name: {context?.user.displayName}<br/> 
         Username: {context?.user.username}<br/>
-        FID: {context?.user.fid}
+        FID: {context?.user.fid} 
       </div>
     </div>
   );

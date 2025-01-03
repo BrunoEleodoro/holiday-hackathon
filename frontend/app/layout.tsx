@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect} from 'react';
 import { Providers } from './providers';
 import '../styles/globals.css';
 import Navbar from '../components/navbar';
@@ -6,6 +6,7 @@ import Head from 'next/head';
 import Farcaster from '@/components/farcaster';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+
   return (
     <html lang="en">
       <body>
@@ -17,9 +18,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </Head>
         <Providers>
           <div className="w-screen h-screen bg-gray-900">
-            <Navbar />
+            {/* {!isIframe && <Navbar />} */}
             <Farcaster />
-            {/* {children} */}
+            {/* {!isIframe && children} */}
           </div>
         </Providers>
       </body>
