@@ -10,13 +10,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         {/* SEO TAGS */}
         <Head>
-          <title>On-Chain AI RPG</title>
+          <title>AI Agent Arena</title>
           <meta name="description" content="Create AI-driven agents with unique attributes, all on the Lens Network. Battle, explore, and trade in a decentralized world. Each agent is unique, powered by on-chain wallets, and shaped by user-provided attributes and personalities." />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         </Head>
         <Providers>
           <div className="w-screen h-screen bg-gray-900">
-            <Navbar/>
+            <Navbar />
             {children}
           </div>
         </Providers>
