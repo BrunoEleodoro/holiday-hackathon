@@ -23,21 +23,9 @@ export default function FaucetPage() {
   return (
     <div className="flex flex-col items-center p-8 min-h-screen bg-gray-900">
       <div className="p-6 mb-8 w-full max-w-3xl text-white bg-gray-800 rounded-lg">
-        <h2 className="mb-4 text-2xl font-bold">Lens Protocol Testnet Faucet</h2>
+        <h2 className="mb-4 text-2xl font-bold">Get Test Tokens</h2>
         
-        {/* Balance Display */}
-        <div className="p-4 mb-4 bg-gray-700 rounded-lg">
-          <p className="text-lg">Current Balance:</p>
-          <p className="font-mono text-xl">
-            {balance ? `${Number(balance.value).toFixed(4)} ${balance.symbol}` : 'Loading...'}
-          </p>
-        </div>
-
-        <p className="mb-4">
-          To request tokens from the faucet, copy your address below and paste it into the faucet interface:
-        </p>
-        
-        <div className="flex gap-4 items-center mb-6">
+        <div className="flex gap-4 items-center mb-4">
           <code className="overflow-x-auto flex-1 p-3 bg-gray-700 rounded">
             {address || 'No wallet connected'}
           </code>
@@ -49,19 +37,10 @@ export default function FaucetPage() {
             {copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        
-        <div className="text-sm text-gray-300">
-          <p>Instructions:</p>
-          <ol className="ml-4 space-y-1 list-decimal">
-            <li>Copy your wallet address above</li>
-            <li>Paste it into the faucet interface below</li>
-            <li>Complete the verification and request tokens</li>
-          </ol>
-        </div>
 
         <button
           onClick={() => router.push('/agents')}
-          className="px-6 py-3 mt-6 w-full text-lg font-bold text-white bg-green-600 rounded transition-colors hover:bg-green-700"
+          className="px-6 py-3 w-full text-lg font-bold text-white bg-green-600 rounded transition-colors hover:bg-green-700"
         >
           Create Your Agent
         </button>
