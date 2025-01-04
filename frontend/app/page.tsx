@@ -5,9 +5,24 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import RetroGrid from "@/components/components/ui/retro-grid";
 import HyperText from "@/components/components/ui/hyper-text";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter();
+
+  const [gameState, setGameState] = useState(null);
+  const [onlinePlayers, setOnlinePlayers] = useState("...");
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/gameState`)
+      .then(response => response.json())
+      .then(data => {
+        setGameState(data);
+        setOnlinePlayers(data.npcs.length);
+      })
+      .catch(error => console.error('Error fetching game state:', error));
+  }, []);
+
   return (
     <>
       <div className="fixed w-full relative z-0">
@@ -24,6 +39,11 @@ export default function Home() {
               <p className="mx-auto mb-6 max-w-2xl text-sm md:mb-8 md:text-base text-neon-blue/80">
                 CREATE AI-DRIVEN AGENTS WITH UNIQUE ATTRIBUTES ON THE LENS
                 NETWORK. BATTLE. EXPLORE. TRADE. IN A DECENTRALIZED DYSTOPIA.
+              </p>
+              <p className="mx-auto mb-6 max-w-2xl text-sm md:mb-8 md:text-base text-neon-pink">
+                {onlinePlayers} AGENTS ON THE ARENA 
+                {/* blinking neon dot */}
+                <span className="animate-blink text-neon-pink w-2 h-2">.</span>
               </p>
               <div className="flex flex-col gap-4 justify-center items-center sm:flex-row">
                 <a
