@@ -235,6 +235,9 @@ app.use(express.json());
 app.route('/blacklist').get((req, res) => {
     res.json(blacklist);
 });
+app.route('/gameState').get((req, res) => {
+    res.json(gameState);
+});
 
 io.on('connection', (socket) => {
     console.log('A user connected');

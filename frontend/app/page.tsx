@@ -42,6 +42,67 @@ export default function Home() {
             </div>
           </section>
 
+          {/* Roadmap Section */}
+          <section className="py-12 md:py-16 bg-cyber-black/80">
+            <div className="px-4 mx-auto max-w-6xl">
+              <HyperText className="mb-6 text-2xl font-bold md:mb-8 md:text-3xl text-neon-pink">
+                ROADMAP::TIMELINE
+              </HyperText>
+              
+              <div className="flex">
+                               {/* Right Timeline Cards */}
+                <div className="flex-1 flex flex-col gap-8">
+                  <div className="relative p-6 border group transition-all duration-300 bg-cyber-gray-800/50 border-neon-blue/30 hover:border-neon-pink hover:bg-cyber-gray-800/70 hover:transform hover:translate-x-2">
+                    <div className="absolute -top-3 left-6 px-2 bg-cyber-black text-neon-pink text-xs font-bold">PHASE_01</div>
+                    <h4 className="mb-4 text-xl font-bold text-neon-pink group-hover:text-neon-blue transition-colors">HACKATHON_KICKOFF</h4>
+                    <div className="text-xs text-neon-pink/70 mb-3">DEC_16_2024</div>
+                    <ul className="list-disc list-inside text-neon-blue/70 space-y-2">
+                      <li>Project initialization </li>
+                      <li>Smart contract architecture design</li>
+                      <li>Core AI integration planning</li>
+                    </ul>
+                  </div>
+
+                  <div className="relative p-6 border group transition-all duration-300 bg-cyber-gray-800/50 border-neon-blue/30 hover:border-neon-pink hover:bg-cyber-gray-800/70 hover:transform hover:translate-x-2 mt-16">
+                    <div className="absolute -top-3 left-6 px-2 bg-cyber-black text-neon-pink text-xs font-bold">PHASE_02</div>
+                    <h4 className="mb-4 text-xl font-bold text-neon-pink group-hover:text-neon-blue transition-colors">BUILDING_PHASE</h4>
+                    <div className="text-xs text-neon-pink/70 mb-3">DEC_16 - JAN_07</div>
+                    <ul className="list-disc list-inside text-neon-blue/70 space-y-2">
+                      <li>Smart contract development & testing</li>
+                      <li>Frontend UI/UX implementation</li>
+                      <li>AI agent behavior systems</li>
+                      <li>Token economics & staking mechanics</li>
+                    </ul>
+                  </div>
+
+                  <div className="relative p-6 border group transition-all duration-300 bg-cyber-gray-800/50 border-neon-blue/30 hover:border-neon-pink hover:bg-cyber-gray-800/70 hover:transform hover:translate-x-2 mt-16">
+                    <div className="absolute -top-3 left-6 px-2 bg-cyber-black text-neon-pink text-xs font-bold">PHASE_03</div>
+                    <h4 className="mb-4 text-xl font-bold text-neon-pink group-hover:text-neon-blue transition-colors">TESTING_&_SUBMISSION</h4>
+                    <div className="text-xs text-neon-pink/70 mb-3">JAN_07_2025</div>
+                    <ul className="list-disc list-inside text-neon-blue/70 space-y-2">
+                      <li>Comprehensive testing & debugging</li>
+                      <li>Documentation completion</li>
+                      <li>Hackathon submission preparation</li>
+                    </ul>
+                  </div>
+
+                  <div className="relative p-6 border group transition-all duration-300 bg-cyber-gray-800/50 border-neon-blue/30 hover:border-neon-pink hover:bg-cyber-gray-800/70 hover:transform hover:translate-x-2 mt-16">
+                    <div className="absolute -top-3 left-6 px-2 bg-cyber-black text-neon-pink text-xs font-bold">PHASE_04</div>
+                    <h4 className="mb-4 text-xl font-bold text-neon-pink group-hover:text-neon-blue transition-colors">MAINNET_LAUNCH</h4>
+                    <div className="text-xs text-neon-pink/70 mb-3">JAN_12_2025</div>
+                    <ul className="list-disc list-inside text-neon-blue/70 space-y-2">
+                      <li>Base network deployment</li>
+                      <li>Community onboarding</li>
+                      <li>Marketing campaign launch</li>
+                      <li>Continuous updates & improvements</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
           {/* Features Section */}
           <section id="features" className="py-12 md:py-16 bg-cyber-black/80">
             <div className="px-4 mx-auto max-w-6xl">
