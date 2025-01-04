@@ -29,6 +29,7 @@ export default function AgentsPage() {
   const router = useRouter();
   const { address } = useAccount();
   const [blacklist, setBlacklist] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data: agentIds, isSuccess } = useReadContract({
     abi: abi.abi,
@@ -38,14 +39,17 @@ export default function AgentsPage() {
   }) as { data: string[]; isSuccess: boolean };
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchBlacklist = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/blacklist`);
         const data = await response.json();
         setBlacklist(data);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching blacklist:", error);
         setBlacklist([]);
+        setIsLoading(false);
       }
     };
 
@@ -71,6 +75,16 @@ export default function AgentsPage() {
               agentIds.map((id: string) => (
                 <AgentCard key={id.toString()} agentId={id.toString()} blacklist={blacklist} />
               ))}
+              {isLoading && (
+                <div className="col-span-full text-center text-neon-pink">
+                  Loading agents...
+                </div>
+              )}
+              {isSuccess && agentIds.length === 0 && (
+                <div className="col-span-full text-center text-neon-pink">
+                  No agents found. Create one!
+                </div>
+              )}
           </div>
         </div>
       ) : (

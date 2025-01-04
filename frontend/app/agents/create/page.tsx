@@ -30,7 +30,7 @@ const characters = [
 
 export default function CreateAgentPage() {
   const router = useRouter();
-//   const { createAccount, isAuthenticated } = useLens();
+  //   const { createAccount, isAuthenticated } = useLens();
   const { writeContract, isPending, isSuccess, isError, error, data } =
     useWriteContract();
   const { address } = useAccount();
@@ -188,30 +188,35 @@ export default function CreateAgentPage() {
             "Create Agent"
           )}
         </button>
+        <div className="p-4 mb-6 text-sm text-blue-200 bg-blue-900/50 rounded-lg">
+          Note: After creating your agent, please allow up to 5 minutes for it
+          to appear on the map.
+        </div>
+        <div className="flex justify-center items-center w-full text-wrap">
+          {isSuccess && (
+            <div className="flex justify-center items-center w-full">
+              <p className="text-green-500">Agent created successfully</p>
+            </div>
+          )}
 
-        {isSuccess && (
-          <div className="flex justify-center items-center w-full">
-            <p className="text-green-500">Agent created successfully</p>
-          </div>
-        )}
+          {isError && (
+            <div className="flex justify-center items-center w-full">
+              <p className="text-red-500">Error creating agent</p>
+            </div>
+          )}
 
-        {isError && (
-          <div className="flex justify-center items-center w-full">
-            <p className="text-red-500">Error creating agent</p>
-          </div>
-        )}
+          {error && (
+            <div className="flex justify-center items-center w-full">
+              <p className="text-red-500">{error.message}</p>
+            </div>
+          )}
 
-        {error && (
-          <div className="flex justify-center items-center w-full">
-            <p className="text-red-500">{error.message}</p>
-          </div>
-        )}
-
-        {data && (
-          <div className="flex justify-center items-center w-full">
-            <p className="text-green-500">Agent created successfully</p>
-          </div>
-        )}
+          {data && (
+            <div className="flex justify-center items-center w-full">
+              <p className="text-green-500">Agent created successfully</p>
+            </div>
+          )}
+        </div>
       </form>
     </main>
   );
