@@ -10,7 +10,7 @@ import { base } from 'viem/chains';
 export const config = createConfig(
   getDefaultConfig({
     appName: 'AI Agent Arena',
-    chains: [chains.testnet, base],
+    chains: [chains.testnet],
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
     connectors: [farcasterFrame()],
     storage: typeof window !== 'undefined' ? createStorage({ storage: window.localStorage }) : undefined

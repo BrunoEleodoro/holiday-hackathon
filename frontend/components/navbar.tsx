@@ -40,6 +40,11 @@ export default function Navbar() {
           <div className="px-6 py-2 rounded-lg border backdrop-blur-sm bg-black/30 border-neon-blue/20">
             <ul className="flex flex-col items-center space-y-4 md:flex-row md:space-y-0 md:space-x-6">
               <li>
+                <Link href="/faucet" className="block transition-colors duration-300 text-neon-blue hover:text-neon-pink">
+                  FAUCET
+                </Link>
+              </li>
+              <li>
                 <Link href="/agents" className="block transition-colors duration-300 text-neon-blue hover:text-neon-pink">
                   AGENTS
                 </Link>
