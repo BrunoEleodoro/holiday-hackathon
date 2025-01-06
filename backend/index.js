@@ -361,7 +361,7 @@ async function updateNPCsFromContract() {
                 }));
 
                 gameState.npcs = [...gameState.npcs, ...newNPCs];
-                gameState.playersCount = [...new Set(gameState.npcs.map(npc => npc.owner))];
+                gameState.playersCount = [...new Set(gameState.npcs.map(npc => npc.owner))].length;
             }
         }
     } catch (error) {
