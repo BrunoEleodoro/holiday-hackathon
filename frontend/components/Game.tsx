@@ -98,7 +98,7 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
     }
 
     return (
-        <div className={`flex justify-center items-center ${farcaster ? 'w-screen' : 'w-[1864px]'} min-h-screen text-white bg-black`}>
+        <div className={`flex justify-center items-center ${farcaster ? 'w-screen' : 'w-screen'} min-h-screen text-white bg-black`}>
             <div className={`relative w-[1864px] h-[1337px] ${farcaster ? 'overflow-hidden' : ''}`}>
                 <div 
                     className="absolute w-[1864px] h-[1337px]"

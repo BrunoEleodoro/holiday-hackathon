@@ -31,6 +31,8 @@ async function getAllAgents() {
                     continue;
                 }
 
+                const ownerOf = await factory.ownerOf(agentId);
+
                 // Create contract instance for the agent wallet
                 const agentWallet = new ethers.Contract(walletAddress, agentWalletAbi.abi, provider);
 
@@ -48,7 +50,8 @@ async function getAllAgents() {
                     character: '/static/characters/' + encodeURIComponent(character),
                     size: 32,
                     speed: 2,
-                    config: createNPCConfig()
+                    config: createNPCConfig(),
+                    owner: ownerOf
                 });
 
                 agentId++;
