@@ -30,8 +30,8 @@ const io = new Server(server, {
 
 // Game state
 const gameState = {
-    mapWidth: 1564 - 10,
-    mapHeight: 1137 - 10,
+    mapWidth: 1864 - 10,
+    mapHeight: 1337 - 10,
     gamePaused: false,
     npcs: [],
     activeConversations: new Map(), // Track ongoing conversations
