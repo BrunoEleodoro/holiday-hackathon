@@ -17,10 +17,10 @@ const { askSimple } = require('./openai');
 const PORT = 3003;
 
 // How often (ms) to check collisions
-const COLLISION_CHECK_INTERVAL = 2000;
+const COLLISION_CHECK_INTERVAL = 1000;
 
 // Use a simple approach to skip frames for NPC movement / game state emissions
-const UPDATE_SKIP_FRAMES = 2;    // Updates happen only every N frames
+const UPDATE_SKIP_FRAMES = 1;    // Updates happen only every N frames
 
 // How often to run the main gameLoop (fps)
 const GAME_LOOP_FPS = 60;
