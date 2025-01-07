@@ -154,17 +154,18 @@ function startConversation(npc1, npc2) {
                 location: { x: (npc1.x + npc2.x) / 2, y: (npc1.y + npc2.y) / 2 }
             }),
             interval: setInterval(async () => {
-                // If we haven't exchanged 10 messages yet, get a new message
+                // If we haven't exchanged 6 messages yet, get a new message
                 if (conversation.messageCount < 6) {
-                    // Alternate between npc1 and npc2
-                    const speaker = conversation.messageCount === 0 ? npc1 : npc2;
+                    // Alternate between npc1 and npc2 based on messageCount
+                    const speaker = conversation.messageCount % 2 === 0 ? npc1 : npc2;
                     const other = speaker === npc1 ? npc2 : npc1;
 
                     let interaction;
                     if (conversation.messageCount === 0) {
                         interaction = `Hi ${other.name}, my name is ${speaker.name} and I'm a ${speaker.character}. ${sampleMessages[Math.floor(Math.random() * sampleMessages.length)]}`;
                     } else {
-                        interaction = `${conversation.conversationHistory[0]}`; // Use previous message as context
+                        // Use the last message from the conversation history as context
+                        interaction = conversation.conversationHistory[conversation.conversationHistory.length - 1];
                     }
 
                     try {
@@ -236,13 +237,15 @@ app.get('/npc/history/:address', async (req, res) => {
     try {
         const conversations = await ConversationHistory.find({
             'participants.id': address
-        }).sort({ startTime: -1 });
+        }).sort({ startTime: -1 }).limit(10); // limit results to 10
+
         res.json(conversations);
     } catch (error) {
         console.error("Error fetching conversation history:", error);
         res.status(500).json({ error: "Failed to fetch conversation history" });
     }
 });
+
 
 function updateNPC(npc) {
     if (npc.isInConversation) return;
