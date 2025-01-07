@@ -16,7 +16,7 @@ async function createAssistant(name, userInstructions) {
     return assistant.id;
 }
 
-async function askSimple(bio, message) {
+async function askSimple(bio, message, history) {
     console.log("asking simple");
     const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -25,6 +25,10 @@ async function askSimple(bio, message) {
             {
                 role: "user",
                 content: message,
+            },
+            {
+                role: "user",
+                content: "Conversation history: " + history.join("\n"),
             },
         ],
     });

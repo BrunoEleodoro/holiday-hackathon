@@ -12,6 +12,8 @@ const cors = require('cors');
 const { getAllAgents, createNPCConfig } = require('./web3');
 const blacklist = require('./blacklist.json');
 const { askSimple } = require('./openai');
+const mongoose = require('mongoose');
+const ConversationHistory = require('./models/ConversationHistory');
 
 // =================== CONFIGURATIONS & CONSTANTS ===================
 const PORT = 3003;
@@ -44,20 +46,21 @@ const gameState = {
     gamePaused: false,
     npcs: [],
     activeConversations: new Map(), // Track ongoing conversations
+    npcConversationHistory: new Map(), // Track conversation history per NPC
     combatLog: []
 };
 
 // =================== SAMPLE MESSAGES ===================
 const sampleMessages = [
-    "How are you doing?",
-    "Nice weather we're having!",
-    "Have you heard the latest news?",
-    "I must be going now.",
-    "What brings you here?",
-    "Interesting outfit!",
-    "Care to join me on an adventure?",
-    "Watch where you're going!",
-    "Let's be friends!"
+    "Hey netrunner, how's your neural interface holding up?",
+    "Another day in this neon-drenched dystopia, eh?",
+    "Heard about the latest corp takedown in the dataverse?",
+    "Gotta jack out, the grid's getting hot.",
+    "What brings a chrome-head like you to these parts?",
+    "Nice augments - black market or legit?",
+    "Looking to hack some systems together? I know a score.",
+    "Watch your vectors in my cyberspace, choomba!",
+    "Let's sync our neural networks, could be profitable."
 ];
 
 // =================== SIMPLE POSITION UTILS ===================
@@ -114,70 +117,104 @@ function moveNPCsApart(npc1, npc2) {
     npc2.x = Math.max(0, Math.min(gameState.mapWidth - npc2.size, newX2));
     npc2.y = Math.max(0, Math.min(gameState.mapHeight - npc2.size, newY2));
 }
-
-// -------------------- RATE-LIMITING OPENAI CALLS --------------------
-/**
- * We'll use a simple queue to store our OpenAI calls.
- * Whenever we want to call askSimple, we push into the queue,
- * and an async worker processes them one at a time.
- */
-const openAIQueue = [];
-let isProcessingQueue = false;
-
-async function processOpenAIQueue() {
-    if (isProcessingQueue) return;
-    isProcessingQueue = true;
-
-    while (openAIQueue.length > 0) {
-        const { speakerBio, interaction, conversationId, speakerName } = openAIQueue.shift();
-        try {
-            // The actual OpenAI call:
-            const message = await askSimple(speakerBio, interaction);
-
-            // Broadcast the message after we receive it
-            io.emit('npcMessage', {
-                speaker: speakerName,
-                message,
-                conversationId
-            });
-        } catch (err) {
-            console.error("Error calling OpenAI:", err);
-        }
-    }
-
-    isProcessingQueue = false;
-}
-
-/**
- * Instead of calling `askSimple` directly in setInterval,
- * push tasks into the queue and let processOpenAIQueue handle them.
- */
 function startConversation(npc1, npc2) {
-    const conversationId = `${npc1.id}-${npc2.id}`;
+    const conversationId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     if (!gameState.activeConversations.has(conversationId)) {
+        // Initialize empty conversation history for both NPCs if not exists
+        if (!gameState.npcConversationHistory.has(npc1.address)) {
+            gameState.npcConversationHistory.set(npc1.address, []);
+        }
+        if (!gameState.npcConversationHistory.has(npc2.address)) {
+            gameState.npcConversationHistory.set(npc2.address, []);
+        }
+
         const conversation = {
-            participants: [npc1.id, npc2.id],
+            participants: [npc1.address, npc2.address],
             messageCount: 0,
-            interval: setInterval(() => {
-                // If we haven't exchanged 2 messages yet, push a new request
-                if (conversation.messageCount < 2) {
-                    const speaker = Math.random() < 0.5 ? npc1 : npc2;
-                    const other = (speaker === npc1) ? npc2 : npc1;
+            conversationHistory: [],
+            // Create MongoDB document for this conversation
+            dbConversation: new ConversationHistory({
+                conversationId,
+                participants: [
+                    {
+                        id: npc1.address,
+                        name: npc1.name,
+                        character: npc1.character,
+                        bio: npc1.instructions,
+                        position: { x: npc1.x, y: npc1.y }
+                    },
+                    {
+                        id: npc2.address,
+                        name: npc2.name,
+                        character: npc2.character,
+                        bio: npc2.instructions,
+                        position: { x: npc2.x, y: npc2.y }
+                    }
+                ],
+                location: { x: (npc1.x + npc2.x) / 2, y: (npc1.y + npc2.y) / 2 }
+            }),
+            interval: setInterval(async () => {
+                // If we haven't exchanged 10 messages yet, get a new message
+                if (conversation.messageCount < 6) {
+                    // Alternate between npc1 and npc2
+                    const speaker = conversation.messageCount === 0 ? npc1 : npc2;
+                    const other = speaker === npc1 ? npc2 : npc1;
 
-                    const interaction = `Hi ${other.name}, my name is ${speaker.name} and I'm a ${speaker.character}.` +
-                        ` ${sampleMessages[Math.floor(Math.random() * sampleMessages.length)]}`;
+                    let interaction;
+                    if (conversation.messageCount === 0) {
+                        interaction = `Hi ${other.name}, my name is ${speaker.name} and I'm a ${speaker.character}. ${sampleMessages[Math.floor(Math.random() * sampleMessages.length)]}`;
+                    } else {
+                        interaction = `${conversation.conversationHistory[0]}`; // Use previous message as context
+                    }
 
-                    // Enqueue OpenAI call
-                    openAIQueue.push({
-                        speakerBio: speaker.bio,
-                        interaction,
-                        conversationId,
-                        speakerName: speaker.name
-                    });
-                    processOpenAIQueue();
+                    try {
+                        const message = await askSimple(speaker.instructions, interaction, conversation.conversationHistory);
+                        conversation.conversationHistory.push(message);
+                        
+                        // Save message to MongoDB
+                        conversation.dbConversation.messages.push({
+                            content: message,
+                            speaker: {
+                                id: speaker.address,
+                                name: speaker.name,
+                                character: speaker.character,
+                                bio: speaker.instructions
+                            },
+                            recipient: {
+                                id: other.address,
+                                name: other.name,
+                                character: other.character,
+                                bio: other.instructions
+                            }
+                        });
+                        conversation.dbConversation.totalMessages++;
+                        await conversation.dbConversation.save();
+                        
+                        // Update the NPC's conversation history
+                        const speakerHistory = gameState.npcConversationHistory.get(speaker.address);
+                        speakerHistory.push({
+                            timestamp: Date.now(),
+                            partner: other.name,
+                            message: message
+                        });
+                        gameState.npcConversationHistory.set(speaker.address, speakerHistory);
+                        
+                        io.emit('npcMessage', {
+                            speaker: speaker.name,
+                            message,
+                            conversationId
+                        });
+                    } catch (err) {
+                        console.error("Error in conversation:", err);
+                    }
 
                     conversation.messageCount++;
                 } else {
+                    // Update MongoDB document when conversation ends
+                    conversation.dbConversation.completed = true;
+                    conversation.dbConversation.endTime = new Date();
+                    await conversation.dbConversation.save();
+
                     clearInterval(conversation.interval);
                     gameState.activeConversations.delete(conversationId);
                     npc1.isInConversation = false;
@@ -192,6 +229,20 @@ function startConversation(npc1, npc2) {
         gameState.activeConversations.set(conversationId, conversation);
     }
 }
+
+// Add endpoint to fetch NPC conversation history
+app.get('/npc/history/:address', async (req, res) => {
+    const { address } = req.params;
+    try {
+        const conversations = await ConversationHistory.find({
+            'participants.id': address
+        }).sort({ startTime: -1 });
+        res.json(conversations);
+    } catch (error) {
+        console.error("Error fetching conversation history:", error);
+        res.status(500).json({ error: "Failed to fetch conversation history" });
+    }
+});
 
 function updateNPC(npc) {
     if (npc.isInConversation) return;
@@ -340,11 +391,11 @@ async function updateNPCsFromContract() {
     try {
         const agents = await getAllAgents();
         if (agents.length > 0) {
-            // Get existing NPCs by ID
-            const existingNPCs = new Map(gameState.npcs.map(npc => [npc.id, npc]));
+            // Get existing NPCs by address
+            const existingNPCs = new Map(gameState.npcs.map(npc => [npc.address, npc]));
 
             // Filter out new agents
-            const newAgents = agents.filter(agent => !existingNPCs.has(agent.id));
+            const newAgents = agents.filter(agent => !existingNPCs.has(agent.address));
 
             if (newAgents.length > 0) {
                 const newPositions = getEvenlyDistributedPositions(
@@ -376,3 +427,9 @@ updateNPCsFromContract().then(() => {
 
 // Periodic NPC updates (every 5 minutes)
 setInterval(updateNPCsFromContract, 5 * 60 * 1000);
+
+// Add mongoose connection setup near the top of the file
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});

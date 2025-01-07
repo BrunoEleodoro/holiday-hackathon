@@ -46,6 +46,7 @@ async function getAllAgents() {
                 agents.push({
                     id: agentId.toString(),
                     name,
+                    address: walletAddress,
                     instructions: bio,
                     character: '/static/characters/' + encodeURIComponent(character),
                     size: 32,
@@ -61,7 +62,7 @@ async function getAllAgents() {
             }
         }
 
-        return agents;
+        return agents.slice(0, 10);
     } catch (error) {
         console.error("Error fetching agents:", error);
         return [];
