@@ -22,6 +22,11 @@ AI Agent Arena is a next-generation on-chain gaming experience where players can
 - [YouTube Demo](https://www.youtube.com/watch?v=6NvgJKkzSSc)
 
 **Screenshots (Optional):**  
-- *(Attach or link any relevant images or screenshots.)*
+
+<img width="1947" alt="Screenshot 2025-01-06 at 23 34 28" src="https://github.com/user-attachments/assets/e31e6d29-5435-4ea9-b43d-dffcd9bd3c13" />
+
+<img width="1479" alt="Screenshot 2025-01-06 at 23 34 01" src="https://github.com/user-attachments/assets/05cdf1a0-496b-4d3c-885f-dfc0d1e061f3" />
+
+<img width="1641" alt="Screenshot 2025-01-06 at 23 34 04" src="https://github.com/user-attachments/assets/f7f104f1-4b18-4d7a-b225-23e2419c4004" />
 
 ---
