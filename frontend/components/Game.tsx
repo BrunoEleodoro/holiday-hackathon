@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import Image from 'next/image';
 import { Combat, GameState } from 'app/types/game';
+import { useRouter } from 'next/navigation';
 
 interface Message {
     speaker: string;
@@ -21,6 +22,7 @@ interface GameProps {
 }
 
 export default function Game({ farcaster, mapPosition }: GameProps) {
+    const router = useRouter();
     const [gameState, setGameState] = useState<GameState>({
         npcs: [],
         activeCombat: null,
@@ -29,6 +31,7 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
     const [activeCombat, setActiveCombat] = useState<Combat | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [conversations, setConversations] = useState<{ [key: string]: Message[] }>({});
+    const [selectedNPC, setSelectedNPC] = useState<any>(null);
 
     useEffect(() => {
         const socket = io(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3003');
@@ -59,12 +62,11 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
                 };
                 return {
                     ...prev,
-                    [message.conversationId]: [...conversationMessages, newMessage].slice(-3) // Keep last 3 messages
+                    [message.conversationId]: [...conversationMessages, newMessage].slice(-3)
                 };
             });
         });
 
-        // Cleanup old messages every second
         const cleanup = setInterval(() => {
             setConversations(prev => {
                 const now = Date.now();
@@ -72,7 +74,7 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
 
                 Object.entries(prev).forEach(([convId, messages]) => {
                     const validMessages = messages.filter(msg =>
-                        msg.timestamp && now - msg.timestamp < 4000 // Remove messages older than 4 seconds
+                        msg.timestamp && now - msg.timestamp < 4000
                     );
                     if (validMessages.length > 0) {
                         filtered[convId] = validMessages;
@@ -88,6 +90,14 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
             clearInterval(cleanup);
         };
     }, []);
+
+    const handleNPCClick = (npc: any) => {
+        setSelectedNPC(npc);
+    };
+
+    const handleViewDetails = (address: string) => {
+        router.push(`/agents/${address}`);
+    };
 
     if (isLoading) {
         return (
@@ -128,6 +138,7 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
                                 width: npc.size + 30,
                                 height: npc.size + 30,
                             }}
+                            onClick={() => handleNPCClick(npc)}
                             title={npc.name}
                         >
                             {/* Sprite Cropping Container */}
@@ -179,6 +190,30 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
                             })}
                         </div>
                     ))}
+
+                    {/* NPC Info Popup */}
+                    {selectedNPC && (
+                        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                            bg-black/95 text-[#0f0] p-6 rounded-lg z-50 border-2 border-[#0f0] min-w-[300px]"
+                            style={{ boxShadow: '0 0 20px rgba(0, 255, 0, 0.5)' }}>
+                            <button 
+                                className="absolute top-2 right-2 text-[#0f0] hover:text-white"
+                                onClick={() => setSelectedNPC(null)}
+                            >
+                                ×
+                            </button>
+                            <h2 className="text-xl font-bold mb-2">{selectedNPC.name}</h2>
+                            <p className="mb-2">{selectedNPC.character}</p>
+                            <p className="mb-4">{selectedNPC.instructions}</p>
+                            <button
+                                className="w-full bg-[#0f0]/20 hover:bg-[#0f0]/30 text-[#0f0] 
+                                py-2 px-4 rounded border border-[#0f0] transition-colors"
+                                onClick={() => handleViewDetails(selectedNPC.address)}
+                            >
+                                View Details
+                            </button>
+                        </div>
+                    )}
 
                     {/* Combat overlay */}
                     {activeCombat && (

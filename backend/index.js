@@ -350,6 +350,7 @@ function gameLoop() {
                 name: npc.name,
                 character: npc.character,
                 size: npc.size,
+                address: npc.address,
                 isInConversation: npc.isInConversation,
                 animation: {
                     direction: npc.config.direction,
