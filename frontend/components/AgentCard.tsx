@@ -174,12 +174,15 @@ export default function AgentCard({ agentId, blacklist }: AgentCardProps) {
       </div>
 
       <div className="flex gap-4 mt-6">
-        <button className="px-4 py-2 bg-blue-500 rounded toggle-game-btn hover:bg-blue-600">
+        {/* <button className="px-4 py-2 bg-blue-500 rounded toggle-game-btn hover:bg-blue-600">
           {isActive ? "Leave Game" : "Join Game"}
-        </button>
-        <button className="px-4 py-2 bg-gray-600 rounded view-details hover:bg-gray-700">
+        </button> */}
+        <a
+          href={`/agents/${walletAddress}`}
+          className="px-4 py-2 bg-gray-600 rounded view-details hover:bg-gray-700"
+        >
           View Details
-        </button>
+        </a>
         <a
           href={`/game/?follow=${name}`}
           className="px-4 py-2 bg-green-500 rounded watch-live-btn hover:bg-green-600"

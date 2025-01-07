@@ -434,8 +434,8 @@ updateNPCsFromContract().then(() => {
     console.log(`Loaded ${gameState.npcs.length} NPCs from blockchain`);
 });
 
-// Periodic NPC updates (every 1 minute)
-setInterval(updateNPCsFromContract, 1 * 60 * 1000);
+// Periodic NPC updates (every 5 minutes)
+setInterval(updateNPCsFromContract, 5 * 60 * 1000);
 
 // Add mongoose connection setup near the top of the file
 mongoose.connect(process.env.MONGO_URI, {
