@@ -101,7 +101,7 @@ export default function AgentPage() {
                 <div
                   className="absolute w-full h-full"
                   style={{
-                    backgroundImage: `url(/static/characters/${agentInfo.character})`,
+                    backgroundImage: `url(${agentInfo.character})`,
                     backgroundPosition: "0 0",
                     imageRendering: "pixelated",
                     transform: "scale(4)",
