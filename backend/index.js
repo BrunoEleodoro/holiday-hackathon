@@ -170,7 +170,7 @@ function startConversation(npc1, npc2) {
                     try {
                         const message = await askSimple(speaker.instructions, interaction, conversation.conversationHistory);
                         conversation.conversationHistory.push(message);
-                        
+
                         // Save message to MongoDB
                         conversation.dbConversation.messages.push({
                             content: message,
@@ -189,7 +189,7 @@ function startConversation(npc1, npc2) {
                         });
                         conversation.dbConversation.totalMessages++;
                         await conversation.dbConversation.save();
-                        
+
                         // Update the NPC's conversation history
                         const speakerHistory = gameState.npcConversationHistory.get(speaker.address);
                         speakerHistory.push({
@@ -198,7 +198,7 @@ function startConversation(npc1, npc2) {
                             message: message
                         });
                         gameState.npcConversationHistory.set(speaker.address, speakerHistory);
-                        
+
                         io.emit('npcMessage', {
                             speaker: speaker.name,
                             message,
@@ -410,12 +410,14 @@ async function updateNPCsFromContract() {
                     isInConversation: false
                 }));
 
-                // Combine existing and new NPCs, then take only the latest 15
                 const allNPCs = [...gameState.npcs, ...newNPCs];
+
+                // Update players count based on all NPCs
+                gameState.playersCount = [...new Set(allNPCs.map(npc => npc.owner))].length;
+
+                // Combine existing and new NPCs, then take only the latest 15
                 gameState.npcs = allNPCs.slice(-15);
-                
-                // Update players count based on the latest 15 NPCs
-                gameState.playersCount = [...new Set(allNPCs.npcs.map(npc => npc.owner))].length;
+
             }
         }
     } catch (error) {
