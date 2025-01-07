@@ -203,8 +203,8 @@ export default function Game({ farcaster, mapPosition }: GameProps) {
                                 ×
                             </button>
                             <h2 className="text-xl font-bold mb-2">{selectedNPC.name}</h2>
-                            <p className="mb-2">{selectedNPC.character}</p>
-                            <p className="mb-4">{selectedNPC.instructions}</p>
+                            {/* <p className="mb-2">{selectedNPC.character}</p>
+                            <p className="mb-4">{selectedNPC.instructions}</p> */}
                             <button
                                 className="w-full bg-[#0f0]/20 hover:bg-[#0f0]/30 text-[#0f0] 
                                 py-2 px-4 rounded border border-[#0f0] transition-colors"
