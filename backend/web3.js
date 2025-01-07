@@ -62,7 +62,7 @@ async function getAllAgents() {
             }
         }
 
-        return agents.slice(-15);
+        return agents;
     } catch (error) {
         console.error("Error fetching agents:", error);
         return [];

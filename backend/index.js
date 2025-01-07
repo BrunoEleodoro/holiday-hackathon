@@ -385,7 +385,6 @@ setInterval(gameLoop, FRAME_INTERVAL_MS);
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
 // =================== NPCs FROM CONTRACT ===================
 async function updateNPCsFromContract() {
     try {
@@ -411,8 +410,12 @@ async function updateNPCsFromContract() {
                     isInConversation: false
                 }));
 
-                gameState.npcs = [...gameState.npcs, ...newNPCs];
-                gameState.playersCount = [...new Set(gameState.npcs.map(npc => npc.owner))].length;
+                // Combine existing and new NPCs, then take only the latest 15
+                const allNPCs = [...gameState.npcs, ...newNPCs];
+                gameState.npcs = allNPCs.slice(-15);
+                
+                // Update players count based on the latest 15 NPCs
+                gameState.playersCount = [...new Set(allNPCs.npcs.map(npc => npc.owner))].length;
             }
         }
     } catch (error) {
@@ -425,8 +428,8 @@ updateNPCsFromContract().then(() => {
     console.log(`Loaded ${gameState.npcs.length} NPCs from blockchain`);
 });
 
-// Periodic NPC updates (every 5 minutes)
-setInterval(updateNPCsFromContract, 5 * 60 * 1000);
+// Periodic NPC updates (every 1 minute)
+setInterval(updateNPCsFromContract, 1 * 60 * 1000);
 
 // Add mongoose connection setup near the top of the file
 mongoose.connect(process.env.MONGO_URI, {
